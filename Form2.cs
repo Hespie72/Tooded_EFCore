@@ -23,7 +23,7 @@ namespace Tooded_EFCore
     {
         private readonly ToodedContext _db;
         private string valitudPilt;
-
+        public Toode SelectedToode { get; set; }
         public Form2()
         {
             InitializeComponent();
@@ -356,6 +356,20 @@ namespace Tooded_EFCore
             menu.Controls.Add(btnSalvesta);
 
             menu.ShowDialog(this);
+        }
+        private void btnArve_Click(object sender, EventArgs e)
+        {
+            // Выбранная строка необязательна: форма сама загрузит все товары
+            Toode toode = null;
+
+            if (dataGridViewTooted.SelectedRows.Count > 0)
+            {
+                int id = Convert.ToInt32(dataGridViewTooted.SelectedRows[0].Cells["Id"].Value);
+                toode = _db.Toodetabel.Find(id);
+            }
+
+            using var arve = new ArveForm { SelectedToode = toode };
+            arve.ShowDialog(this);
         }
 
     }

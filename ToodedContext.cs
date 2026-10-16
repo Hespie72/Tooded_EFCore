@@ -7,16 +7,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tooded_EFCore
 {
-   
+
     public class ToodedContext : DbContext
     {
         public DbSet<Toode> Toodetabel { get; set; }
         public DbSet<Kategooria> Kategooriatabel { get; set; }
+        public DbSet<Kasutaja> Kasutajad { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(
-                @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;");
+                @"Server=(localdb)\MSSQLLocalDB;Database=ToodeAB;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

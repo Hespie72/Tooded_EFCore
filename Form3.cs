@@ -27,7 +27,6 @@ namespace Tooded_EFCore
             _db = new ToodedContext();
             LaeKategooriadJaPildid();
         }
-
         private void LaeKategooriadJaPildid()
         {
             tabPood.TabPages.Clear();
@@ -63,6 +62,10 @@ namespace Tooded_EFCore
                     pb.Height = 140;
                     pb.SizeMode = PictureBoxSizeMode.Zoom;
                     pb.Location = new Point(5, 5);
+                    pb.Click += (s, e) =>
+                    {
+                        MessageBox.Show($"Toode: {t.Toodenimetus}\nHind: {t.Hind}€");
+                    };
 
                     // lae pilt failist, kui olemas
                     var piltPath = Path.Combine("Images", t.Pilt ?? "puudub.png");
@@ -100,6 +103,7 @@ namespace Tooded_EFCore
                 // Lisa TabPage TabControli sisse
                 tabPood.TabPages.Add(page);
             }
+
         }
     }
 }

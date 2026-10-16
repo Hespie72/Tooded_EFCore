@@ -29,23 +29,35 @@
         private System.Windows.Forms.TabControl tabPood;
         private void InitializeComponent()
         {
-            this.tabPood = new System.Windows.Forms.TabControl();
-            this.SuspendLayout();
-
+            tabPood = new TabControl();
+            SuspendLayout();
+            // 
             // tabPood
-            this.tabPood.Location = new System.Drawing.Point(10, 10);
-            this.tabPood.Name = "tabPood";
-            this.tabPood.Size = new System.Drawing.Size(900, 600);
-
+            // 
+            tabPood.Location = new Point(10, 10);
+            tabPood.Margin = new Padding(3, 2, 3, 2);
+            tabPood.Name = "tabPood";
+            tabPood.SelectedIndex = 0;
+            tabPood.Size = new Size(900, 600);
+            tabPood.TabIndex = 0;
+            // 
             // Form3
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(930, 630);
-            this.Controls.Add(this.tabPood);
-            this.Name = "Form3";
-            this.Text = "Pood";
-            this.ResumeLayout(false);
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(923, 612);
+            Controls.Add(tabPood);
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "Form3";
+            Text = "Pood";
+            ResumeLayout(false);
+
+            //pb.Click += (s, e) =>
+            //{
+            //    MessageBox.Show($"Toode: {t.Toodenimetus}\nHind: {t.Hind}€");
+            //};
         }
+
 
         #endregion
 
