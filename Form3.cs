@@ -34,10 +34,28 @@ public partial class Form3 : Form
         Padding = new Padding(10, 0, 0, 0)
     };
 
+    private readonly ComboBox comboJarjestus = new()
+    {
+        Width = 180,
+        DropDownStyle = ComboBoxStyle.DropDownList
+    };
+
+    private readonly CheckBox chkLaos = new()
+    {
+        Text = "Ainult laos",
+        AutoSize = true,
+        Margin = new Padding(12, 6, 3, 3)
+    };
+
     public Form3()
     {
         InitializeComponent();
+
+        ClientSize = new Size(1160, 800);
+        MinimumSize = new Size(950, 650);
+
         LisaFiltrid();
+        Kujundus.Rakenda(this);
 
         Load += (s, e) =>
         {
@@ -67,6 +85,16 @@ public partial class Form3 : Form
 
     private void LisaFiltrid()
     {
+        comboJarjestus.Items.AddRange(new object[]
+        {
+            "Nimetus A–Z",
+            "Nimetus Z–A",
+            "Hind kasvavalt",
+            "Hind kahanevalt"
+        });
+
+        comboJarjestus.SelectedIndex = 0;
+
         var filtrid = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
@@ -89,12 +117,14 @@ public partial class Form3 : Form
 
         puhastaNupp.Click += (s, e) =>
         {
-            // Väldib vaate korduvat uuendamist väljade puhastamisel.
             andmedLaetud = false;
 
             txtOtsing.Clear();
             txtHindAlates.Clear();
             txtHindKuni.Clear();
+
+            comboJarjestus.SelectedIndex = 0;
+            chkLaos.Checked = false;
 
             andmedLaetud = true;
 
@@ -112,6 +142,10 @@ public partial class Form3 : Form
             Silt("kuni:"),
             txtHindKuni,
 
+            Silt("Sorteeri:"),
+            comboJarjestus,
+
+            chkLaos,
             puhastaNupp
         });
 
@@ -119,14 +153,17 @@ public partial class Form3 : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 3
+            RowCount = 4
         };
 
         paigutus.ColumnStyles.Add(
             new ColumnStyle(SizeType.Percent, 100));
 
         paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 75));
+            new RowStyle(SizeType.Absolute, 60));
+
+        paigutus.RowStyles.Add(
+            new RowStyle(SizeType.Absolute, 100));
 
         paigutus.RowStyles.Add(
             new RowStyle(SizeType.Absolute, 28));
@@ -134,16 +171,24 @@ public partial class Form3 : Form
         paigutus.RowStyles.Add(
             new RowStyle(SizeType.Percent, 100));
 
-        // Paigutab olemasoleva kategooriate vaate filtrite alla.
         Controls.Remove(tabPood);
 
         tabPood.Dock = DockStyle.Fill;
 
-        paigutus.Controls.Add(filtrid, 0, 0);
-        paigutus.Controls.Add(lblTulemus, 0, 1);
-        paigutus.Controls.Add(tabPood, 0, 2);
+        paigutus.Controls.Add(
+            Kujundus.Pealkiri("Pood"), 0, 0);
+
+        paigutus.Controls.Add(filtrid, 0, 1);
+        paigutus.Controls.Add(lblTulemus, 0, 2);
+        paigutus.Controls.Add(tabPood, 0, 3);
 
         Controls.Add(paigutus);
+
+        comboJarjestus.SelectedIndexChanged +=
+            (s, e) => RakendaFiltrid();
+
+        chkLaos.CheckedChanged +=
+            (s, e) => RakendaFiltrid();
 
         txtOtsing.TextChanged +=
             (s, e) => RakendaFiltrid();
@@ -161,14 +206,11 @@ public partial class Form3 : Form
     {
         hind = null;
 
-        // Tühi väli tähendab, et vastavat hinnapiiri ei rakendata.
         if (string.IsNullOrWhiteSpace(tekst))
             return true;
 
         // Lubab kümnendmärgina nii koma kui ka punkti.
-        string vaartus = tekst
-            .Trim()
-            .Replace(',', '.');
+        string vaartus = tekst.Trim().Replace(',', '.');
 
         if (!decimal.TryParse(
                 vaartus,
@@ -197,7 +239,7 @@ public partial class Form3 : Form
                 txtHindKuni.Text,
                 out decimal? kuni))
         {
-            lblTulemus.ForeColor = Color.Firebrick;
+            lblTulemus.ForeColor = Color.Salmon;
 
             lblTulemus.Text =
                 "Sisesta korrektne mittenegatiivne hind.";
@@ -209,7 +251,7 @@ public partial class Form3 : Form
             kuni.HasValue &&
             alates > kuni)
         {
-            lblTulemus.ForeColor = Color.Firebrick;
+            lblTulemus.ForeColor = Color.Salmon;
 
             lblTulemus.Text =
                 "Alghind ei tohi olla lõpphinnast suurem.";
@@ -222,9 +264,13 @@ public partial class Form3 : Form
         bool filtreeritud =
             otsing.Length > 0 ||
             alates.HasValue ||
-            kuni.HasValue;
+            kuni.HasValue ||
+            chkLaos.Checked;
 
-        // Eemaldab eelmise vaate.
+        string? aktiivne =
+            tabPood.SelectedTab?.Name;
+
+        // Vabastab eelmise vaate ja selle pildid.
         while (tabPood.TabPages.Count > 0)
         {
             var leht = tabPood.TabPages[0];
@@ -233,7 +279,6 @@ public partial class Form3 : Form
             leht.Dispose();
         }
 
-        // Vabastab eelmises vaates kasutatud pildid.
         foreach (var pilt in pildid)
             pilt.Dispose();
 
@@ -253,16 +298,41 @@ public partial class Form3 : Form
                         t.Hind >= (float)alates.Value)
 
                     && (!kuni.HasValue ||
-                        t.Hind <= (float)kuni.Value))
-                .OrderBy(t => t.Toodenimetus)
+                        t.Hind <= (float)kuni.Value)
+
+                    && (!chkLaos.Checked ||
+                        t.Kogus > 0))
                 .ToList();
 
-            // Filtreerimisel peidab sobivate toodeteta kategooriad.
+            tooted = comboJarjestus.SelectedIndex switch
+            {
+                1 => tooted
+                    .OrderByDescending(t => t.Toodenimetus)
+                    .ToList(),
+
+                2 => tooted
+                    .OrderBy(t => t.Hind)
+                    .ThenBy(t => t.Toodenimetus)
+                    .ToList(),
+
+                3 => tooted
+                    .OrderByDescending(t => t.Hind)
+                    .ThenBy(t => t.Toodenimetus)
+                    .ToList(),
+
+                _ => tooted
+                    .OrderBy(t => t.Toodenimetus)
+                    .ToList()
+            };
+
             if (filtreeritud && tooted.Count == 0)
                 continue;
 
             var leht = new TabPage(
-                kat.Kategooria_nimetus);
+                kat.Kategooria_nimetus)
+            {
+                Name = kat.Id.ToString()
+            };
 
             var paigutus = new FlowLayoutPanel
             {
@@ -273,6 +343,8 @@ public partial class Form3 : Form
             leht.Controls.Add(paigutus);
             tabPood.TabPages.Add(leht);
 
+            Kujundus.Rakenda(leht);
+
             foreach (var toode in tooted)
             {
                 paigutus.Controls.Add(
@@ -282,18 +354,27 @@ public partial class Form3 : Form
             }
         }
 
-        lblTulemus.ForeColor =
-            SystemColors.ControlText;
+        // Säilitab võimalusel varem valitud kategooria.
+        if (aktiivne != null &&
+            tabPood.TabPages.ContainsKey(aktiivne))
+        {
+            tabPood.SelectedTab =
+                tabPood.TabPages[aktiivne];
+        }
 
-        lblTulemus.Text =
-            $"Leitud tooteid: {arv}";
+        lblTulemus.ForeColor = Kujundus.Vaikne;
+        lblTulemus.Text = $"Leitud tooteid: {arv}";
 
         if (tabPood.TabPages.Count == 0)
         {
-            tabPood.TabPages.Add(new TabPage(
+            var tyhiLeht = new TabPage(
                 filtreeritud
                     ? "Sobivaid tooteid ei leitud"
-                    : "Kategooriaid pole veel lisatud"));
+                    : "Kategooriaid pole veel lisatud");
+
+            Kujundus.Rakenda(tyhiLeht);
+
+            tabPood.TabPages.Add(tyhiLeht);
         }
     }
 
@@ -334,9 +415,7 @@ public partial class Form3 : Form
 
         if (!File.Exists(tee))
         {
-            tee = Path.Combine(
-                "Images",
-                nimi);
+            tee = Path.Combine("Images", nimi);
         }
 
         try
@@ -354,13 +433,11 @@ public partial class Form3 : Form
         }
         catch (ArgumentException)
         {
-            pildikast.BackColor =
-                Color.LightGray;
+            pildikast.BackColor = Color.LightGray;
         }
         catch (IOException)
         {
-            pildikast.BackColor =
-                Color.LightGray;
+            pildikast.BackColor = Color.LightGray;
         }
 
         pildikast.Click += (s, e) =>
@@ -410,6 +487,12 @@ public partial class Form3 : Form
         });
 
         kaart.Controls.Add(nupp);
+
+        Kujundus.Rakenda(kaart);
+
+        kaart.BackColor = Kujundus.Pind;
+
+        Kujundus.Rohuta(nupp);
 
         return kaart;
     }

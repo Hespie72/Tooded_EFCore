@@ -20,12 +20,113 @@ public partial class Form2 : Form
     {
         InitializeComponent();
 
+        Controls.Clear();
+
+        Text = "Toodete haldus";
+        ClientSize = new Size(1180, 800);
+        MinimumSize = new Size(980, 700);
+
         dataGridViewTooted.AllowUserToAddRows = false;
+        dataGridViewTooted.Dock = DockStyle.Fill;
+
+        dataGridViewTooted.AutoSizeColumnsMode =
+            DataGridViewAutoSizeColumnsMode.Fill;
 
         comboKategooria.DropDownStyle =
             ComboBoxStyle.DropDownList;
 
         button1.Text = "Kategooriad";
+
+        var paigutus = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 2,
+            Padding = new Padding(15)
+        };
+
+        paigutus.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Percent, 100));
+
+        paigutus.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Absolute, 330));
+
+        paigutus.RowStyles.Add(
+            new RowStyle(SizeType.Absolute, 60));
+
+        paigutus.RowStyles.Add(
+            new RowStyle(SizeType.Percent, 100));
+
+        var pealkiri = Kujundus.Pealkiri(
+            "Toodete haldus");
+
+        paigutus.Controls.Add(pealkiri, 0, 0);
+        paigutus.SetColumnSpan(pealkiri, 2);
+
+        paigutus.Controls.Add(
+            dataGridViewTooted,
+            0,
+            1);
+
+        var valjad = Kujundus.Veerg();
+
+        valjad.Padding =
+            new Padding(15, 0, 5, 10);
+
+        Kujundus.LisaVali(
+            valjad,
+            "Toote nimetus",
+            txtNimetus);
+
+        Kujundus.LisaVali(
+            valjad,
+            "Kogus laos",
+            txtKogus);
+
+        Kujundus.LisaVali(
+            valjad,
+            "Hind (€)",
+            txtHind);
+
+        Kujundus.LisaVali(
+            valjad,
+            "Kategooria",
+            comboKategooria);
+
+        picturePilt.Size =
+            new Size(280, 170);
+
+        picturePilt.Margin =
+            new Padding(3, 15, 3, 8);
+
+        valjad.Controls.Add(picturePilt);
+
+        foreach (var nupp in new[]
+                 {
+                 btnValiPilt,
+                 btnLisa,
+                 btnUuenda,
+                 btnKustuta,
+                 button1
+             })
+        {
+            nupp.Size = new Size(280, 38);
+            nupp.Margin = new Padding(3, 3, 3, 5);
+
+            valjad.Controls.Add(nupp);
+        }
+
+        var arveNupp = Kujundus.Nupp(
+            "Lisa arvele",
+            btnArve_Click);
+
+        arveNupp.Width = 280;
+
+        valjad.Controls.Add(arveNupp);
+
+        paigutus.Controls.Add(valjad, 1, 1);
+
+        Controls.Add(paigutus);
 
         bool admin = AktiivneKasutaja.OnAdmin;
 
@@ -41,16 +142,10 @@ public partial class Form2 : Form
 
         comboKategooria.Enabled = admin;
 
-        var arveNupp = new Button
-        {
-            Text = "Lisa arvele",
-            Location = new Point(12, 330),
-            Size = new Size(140, 35)
-        };
+        Kujundus.Rakenda(this);
+        Kujundus.Rohuta(btnLisa);
 
-        arveNupp.Click += btnArve_Click;
-
-        Controls.Add(arveNupp);
+        btnKustuta.ForeColor = Color.Salmon;
 
         Load += (s, e) => Teosta(() =>
         {
@@ -214,7 +309,7 @@ public partial class Form2 : Form
         }
 
         if (!int.TryParse(txtKogus.Text, out kogus) ||
-            kogus < 0)
+            kogus < -1)
         {
             MessageBox.Show(
                 "Sisesta korrektne mittenegatiivne kogus!");
@@ -679,7 +774,7 @@ public partial class Form2 : Form
             Lae();
 
             aken.ShowDialog(this);
-
+            Kujundus.Rakenda(aken);
             LaeKategooriad();
             LaeTooted();
             PuhastaValjad();
