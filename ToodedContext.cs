@@ -17,7 +17,7 @@ namespace Tooded_EFCore
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(
-                @"Server=(localdb)\MSSQLLocalDB;Database=ToodeAB;Trusted_Connection=True;");
+               @"Server=(localdb)\MSSQLLocalDB;Database=ToodeAB;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
