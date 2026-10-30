@@ -1,26 +1,51 @@
-namespace Tooded_EFCore
+namespace Tooded_EFCore;
+
+public partial class Form1 : Form
 {
-    public partial class Form1 : Form
+    public Form1()
     {
-        public Form1()
+        InitializeComponent();
+
+        btnTooted.Enabled = AktiivneKasutaja.OnAdmin;
+
+        Text = $"Peamenüü — {AktiivneKasutaja.Nimi}";
+    }
+
+    private void AvaVorm(Func<Form> looVorm)
+    {
+        try
         {
-            InitializeComponent();
+            using var vorm = looVorm();
+            vorm.ShowDialog(this);
         }
-        private void btnTooted_Click(object sender, EventArgs e)
+        catch (Exception viga)
         {
-            Form2 f = new Form2();
-            f.ShowDialog();
+            MessageBox.Show(
+                "Vormi avamine ebaõnnestus:\n" + viga.Message,
+                "Viga");
         }
-        private void btnPood_Click(object sender, EventArgs e)
+    }
+
+    private void btnTooted_Click(object sender, EventArgs e)
+    {
+        if (!AktiivneKasutaja.OnAdmin)
         {
-            Form3 poodForm = new Form3();
-            poodForm.ShowDialog();
-        }
-        private void btnArve_Click(object sender, EventArgs e)
-        {
-            ArveForm arve = new ArveForm();
-            arve.ShowDialog();
+            MessageBox.Show(
+                "Tootehaldus on lubatud ainult administraatorile.");
+
+            return;
         }
 
+        AvaVorm(() => new Form2());
+    }
+
+    private void btnPood_Click(object sender, EventArgs e)
+    {
+        AvaVorm(() => new Form3());
+    }
+
+    private void btnArve_Click(object sender, EventArgs e)
+    {
+        AvaVorm(() => new ArveForm());
     }
 }

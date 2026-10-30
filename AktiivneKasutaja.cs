@@ -1,18 +1,19 @@
-namespace Tooded_EFCore
+namespace Tooded_EFCore;
+
+public static class AktiivneKasutaja
 {
-    public static class AktiivneKasutaja
+    public static string Roll { get; set; } = "";
+    public static string Nimi { get; set; } = "";
+    public static string Email { get; set; } = "";
+
+    public static bool OnAdmin => Roll == "admin";
+
+    public static void Logout()
     {
-        public static string Roll { get; set; }
-        public static string Nimi { get; set; }
-        public static string Email { get; set; }
+        Roll = "";
+        Nimi = "";
+        Email = "";
 
-        public static bool OnAdmin => Roll == "admin";
-
-        public static void Logout()
-        {
-            Roll = null;
-            Nimi = null;
-            Email = null;
-        }
+        ArveForm.TuhjendaKorv();
     }
 }

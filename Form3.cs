@@ -1,109 +1,194 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-namespace Tooded_EFCore
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tooded_EFCore;
+
+public partial class Form3 : Form
 {
+    private readonly List<Image> pildid = new();
 
-
-    public partial class Form3 : Form
+    public Form3()
     {
-        private readonly ToodedContext _db;
+        InitializeComponent();
 
-        public Form3()
+        Load += (s, e) =>
         {
-            InitializeComponent();
-            _db = new ToodedContext();
-            LaeKategooriadJaPildid();
-        }
-        private void LaeKategooriadJaPildid()
-        {
-            tabPood.TabPages.Clear();
-
-            var kategooriad = _db.Kategooriatabel.ToList();
-
-            foreach (var kat in kategooriad)
+            try
             {
-                // Loo uus tab selle kategooria jaoks
-                var page = new TabPage(kat.Kategooria_nimetus);
-                page.AutoScroll = true;
+                LaeKategooriadJaPildid();
+            }
+            catch (Exception viga)
+            {
+                MessageBox.Show(
+                    "Poe laadimine ebaõnnestus:\n" +
+                    viga.Message,
+                    "Viga");
+            }
+        };
+    }
 
-                // Too kategooria tooted andmebaasist
-                var tooted = _db.Toodetabel
-                                .Where(t => t.KategooriaId == kat.Id)
-                                .ToList();
+    private void LaeKategooriadJaPildid()
+    {
+        using var db = new ToodedContext();
 
-                int x = 10;
-                int y = 10;
-                int count = 0;
+        var kategooriad = db.Kategooriatabel
+            .AsNoTracking()
+            .Include(k => k.Tooded)
+            .OrderBy(k => k.Kategooria_nimetus)
+            .ToList();
 
-                foreach (var t in tooted)
+        foreach (var kat in kategooriad)
+        {
+            var leht = new TabPage(
+                kat.Kategooria_nimetus);
+
+            var paigutus = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true
+            };
+
+            leht.Controls.Add(paigutus);
+
+            tabPood.TabPages.Add(leht);
+
+            foreach (var toode in kat.Tooded
+                         .OrderBy(t => t.Toodenimetus))
+            {
+                var kaart = new FlowLayoutPanel
                 {
-                    // Loo paneel iga toote jaoks
-                    Panel p = new Panel();
-                    p.Width = 150;
-                    p.Height = 200;
-                    p.BorderStyle = BorderStyle.FixedSingle;
+                    Size = new Size(200, 280),
+                    FlowDirection =
+                        FlowDirection.TopDown,
+                    WrapContents = false,
+                    BorderStyle =
+                        BorderStyle.FixedSingle,
+                    Padding = new Padding(5)
+                };
 
-                    // Pildikast
-                    PictureBox pb = new PictureBox();
-                    pb.Width = 140;
-                    pb.Height = 140;
-                    pb.SizeMode = PictureBoxSizeMode.Zoom;
-                    pb.Location = new Point(5, 5);
-                    pb.Click += (s, e) =>
-                    {
-                        MessageBox.Show($"Toode: {t.Toodenimetus}\nHind: {t.Hind}€");
-                    };
+                var pildikast = new PictureBox
+                {
+                    Size = new Size(185, 150),
+                    SizeMode =
+                        PictureBoxSizeMode.Zoom
+                };
 
-                    // lae pilt failist, kui olemas
-                    var piltPath = Path.Combine("Images", t.Pilt ?? "puudub.png");
-                    if (File.Exists(piltPath))
-                        pb.Image = Image.FromFile(piltPath);
+                string nimi = Path.GetFileName(
+                    toode.Pilt ?? "");
 
-                    // Nimetus
-                    Label lbl = new Label();
-                    lbl.Text = t.Toodenimetus;
-                    lbl.AutoSize = false;
-                    lbl.TextAlign = ContentAlignment.MiddleCenter;
-                    lbl.Location = new Point(5, 150);
-                    lbl.Width = 140;
+                string tee = Path.Combine(
+                    Environment.GetFolderPath(
+                        Environment.SpecialFolder
+                            .LocalApplicationData),
+                    "Tooded_EFCore",
+                    "Images",
+                    nimi);
 
-                    // Lisa elemendid paneelile
-                    p.Controls.Add(pb);
-                    p.Controls.Add(lbl);
-
-                    // Paiguta paneel TabPage-s
-                    p.Location = new Point(x, y);
-                    page.Controls.Add(p);
-
-                    // Järgmise positsioon
-                    x += 160;
-                    count++;
-
-                    // iga 4 pildi järel uus rida
-                    if (count % 4 == 0)
-                    {
-                        x = 10;
-                        y += 210;
-                    }
+                if (!File.Exists(tee))
+                {
+                    tee = Path.Combine(
+                        AppContext.BaseDirectory,
+                        "Images",
+                        nimi);
                 }
 
-                // Lisa TabPage TabControli sisse
-                tabPood.TabPages.Add(page);
-            }
+                if (!File.Exists(tee))
+                {
+                    tee = Path.Combine(
+                        "Images",
+                        nimi);
+                }
 
+                try
+                {
+                    if (File.Exists(tee))
+                    {
+                        using var algne =
+                            Image.FromFile(tee);
+
+                        var koopia = new Bitmap(algne);
+
+                        pildid.Add(koopia);
+                        pildikast.Image = koopia;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    pildikast.BackColor =
+                        Color.LightGray;
+                }
+                catch (IOException)
+                {
+                    pildikast.BackColor =
+                        Color.LightGray;
+                }
+
+                pildikast.Click += (s, e) =>
+                    MessageBox.Show(
+                        $"{toode.Toodenimetus}\n" +
+                        $"Hind: {toode.Hind:0.00} €\n" +
+                        $"Laos: {toode.Kogus} tk",
+                        "Toote andmed");
+
+                var nupp = new Button
+                {
+                    Text = "Vali ja lisa korvi",
+                    Size = new Size(185, 32),
+                    Enabled = toode.Kogus > 0
+                };
+
+                nupp.Click += (s, e) =>
+                {
+                    try
+                    {
+                        using var arve = new ArveForm
+                        {
+                            SelectedToode = toode
+                        };
+
+                        arve.ShowDialog(this);
+                    }
+                    catch (Exception viga)
+                    {
+                        MessageBox.Show(
+                            "Arve avamine ebaõnnestus:\n" +
+                            viga.Message,
+                            "Viga");
+                    }
+                };
+
+                kaart.Controls.Add(pildikast);
+
+                kaart.Controls.Add(new Label
+                {
+                    Text =
+                        $"{toode.Toodenimetus}\n" +
+                        $"{toode.Hind:0.00} € | " +
+                        $"Laos: {toode.Kogus} tk",
+                    Size = new Size(185, 55)
+                });
+
+                kaart.Controls.Add(nupp);
+
+                paigutus.Controls.Add(kaart);
+            }
         }
+
+        if (kategooriad.Count == 0)
+        {
+            tabPood.TabPages.Add(
+                new TabPage(
+                    "Kategooriaid pole veel lisatud"));
+        }
+    }
+
+    protected override void OnFormClosed(
+        FormClosedEventArgs e)
+    {
+        foreach (var pilt in pildid)
+            pilt.Dispose();
+
+        pildid.Clear();
+
+        base.OnFormClosed(e);
     }
 }
