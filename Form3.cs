@@ -149,6 +149,30 @@ public partial class Form3 : Form
             puhastaNupp
         });
 
+        var korviNupp = new Button
+        {
+            Text = "Ostukorv ja arve",
+            AutoSize = true
+        };
+
+        korviNupp.Click += (s, e) =>
+        {
+            try
+            {
+                using var arve = new ArveForm();
+                arve.ShowDialog(this);
+            }
+            catch (Exception viga)
+            {
+                MessageBox.Show(
+                    "Arve avamine ebaõnnestus:\n" +
+                    viga.Message,
+                    "Viga");
+            }
+        };
+
+        filtrid.Controls.Add(korviNupp);
+
         var paigutus = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
@@ -449,7 +473,9 @@ public partial class Form3 : Form
 
         var nupp = new Button
         {
-            Text = "Vali ja lisa korvi",
+            Text = "+",
+            AccessibleName =
+        $"Lisa {toode.Toodenimetus} ostukorvi",
             Size = new Size(185, 32),
             Enabled = toode.Kogus > 0
         };
@@ -458,17 +484,16 @@ public partial class Form3 : Form
         {
             try
             {
-                using var arve = new ArveForm
-                {
-                    SelectedToode = toode
-                };
+                ArveForm.LisaKorvi(toode.Id);
 
-                arve.ShowDialog(this);
+                lblTulemus.ForeColor = Kujundus.Vaikne;
+                lblTulemus.Text =
+                    $"Lisatud ostukorvi: {toode.Toodenimetus} (+1)";
             }
             catch (Exception viga)
             {
                 MessageBox.Show(
-                    "Arve avamine ebaõnnestus:\n" +
+                    "Toote lisamine ebaõnnestus:\n" +
                     viga.Message,
                     "Viga");
             }

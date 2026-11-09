@@ -94,18 +94,19 @@ public partial class ArveForm : Form
             Dock = DockStyle.Fill
         };
 
-        lblToode.Text = "Vali toode:";
+        lblToode.Text =
+    "Lisa tooteid poes toote kõrval oleva + nupuga.";
+
+        lblToode.AutoSize = true;
         lblToode.Margin = new Padding(3, 10, 10, 3);
 
-        comboToode.Width = 440;
-
+        btnLisaKorvi.Text = "Ava pood";
         btnLisaKorvi.Size = new Size(150, 38);
 
         valik.Controls.AddRange(new Control[]
         {
-            lblToode,
-            comboToode,
-            btnLisaKorvi
+    lblToode,
+    btnLisaKorvi
         });
 
         paigutus.Controls.Add(valik, 0, 1);
@@ -283,28 +284,15 @@ public partial class ArveForm : Form
     }
 
     private void ArveForm_Load(
-        object? sender,
-        EventArgs e)
+    object? sender,
+    EventArgs e)
     {
         Teosta(() =>
         {
-            using var db = new ToodedContext();
-
-            comboToode.DisplayMember =
-                nameof(Toode.Toodenimetus);
-
-            comboToode.ValueMember =
-                nameof(Toode.Id);
-
-            comboToode.DataSource = db.Toodetabel
-                .AsNoTracking()
-                .OrderBy(t => t.Toodenimetus)
-                .ToList();
-
             if (SelectedToode != null)
             {
-                comboToode.SelectedValue =
-                    SelectedToode.Id;
+                LisaKorvi(SelectedToode.Id);
+                SelectedToode = null;
             }
 
             UuendaKorv();
@@ -312,69 +300,13 @@ public partial class ArveForm : Form
     }
 
     private void btnLisaKorvi_Click(
-        object sender,
-        EventArgs e)
+    object sender,
+    EventArgs e)
     {
-        if (comboToode.SelectedValue is not int id)
-        {
-            MessageBox.Show("Vali toode!");
-            return;
-        }
-
-        string sisend =
-            Microsoft.VisualBasic.Interaction.InputBox(
-                "Sisesta kogus",
-                "Kogus",
-                "1");
-
-        if (string.IsNullOrWhiteSpace(sisend))
-            return;
-
-        if (!int.TryParse(sisend, out int kogus) ||
-            kogus <= 0)
-        {
-            MessageBox.Show(
-                "Sisesta positiivne täisarv!");
-
-            return;
-        }
-
         Teosta(() =>
         {
-            using var db = new ToodedContext();
-
-            var toode = db.Toodetabel
-                .AsNoTracking()
-                .FirstOrDefault(t => t.Id == id)
-                ?? throw new InvalidOperationException(
-                    "Toodet ei leitud!");
-
-            if (!float.IsFinite(toode.Hind) ||
-                toode.Hind < 0 ||
-                toode.Hind > 100000000)
-            {
-                throw new InvalidOperationException(
-                    "Toote hind on vigane.");
-            }
-
-            long korvis = ostukorv
-                .Where(r => r.Toode.Id == id)
-                .Sum(r => (long)r.Kogus);
-
-            if (korvis + kogus > toode.Kogus)
-            {
-                throw new InvalidOperationException(
-                    $"Laos on {toode.Kogus} tk. " +
-                    $"Korvis on juba {korvis} tk.");
-            }
-
-            ostukorv.Add(new OstukorviRida
-            {
-                Toode = toode,
-                Kogus = kogus
-            });
-
-            korviVersioon++;
+            using var pood = new Form3();
+            pood.ShowDialog(this);
 
             UuendaKorv();
         });
@@ -705,5 +637,52 @@ public partial class ArveForm : Form
 
             btnAvaPdf.Enabled = PdfKehtib();
         }
+    }
+    public static void LisaKorvi(int tooteId)
+    {
+        using var db = new ToodedContext();
+
+        var toode = db.Toodetabel
+            .AsNoTracking()
+            .FirstOrDefault(t => t.Id == tooteId)
+            ?? throw new InvalidOperationException(
+                "Toodet ei leitud!");
+
+        if (!float.IsFinite(toode.Hind) ||
+            toode.Hind < 0 ||
+            toode.Hind > 100000000)
+        {
+            throw new InvalidOperationException(
+                "Toote hind on vigane.");
+        }
+
+        var rida = ostukorv.FirstOrDefault(
+            r => r.Toode.Id == tooteId);
+
+        long uusKogus = (long)(rida?.Kogus ?? 0) + 1;
+
+        if (uusKogus > toode.Kogus ||
+            uusKogus > int.MaxValue)
+        {
+            throw new InvalidOperationException(
+                $"Laos on {toode.Kogus} tk. " +
+                $"Korvis on juba {rida?.Kogus ?? 0} tk.");
+        }
+
+        if (rida == null)
+        {
+            ostukorv.Add(new OstukorviRida
+            {
+                Toode = toode,
+                Kogus = 1
+            });
+        }
+        else
+        {
+            rida.Toode = toode;
+            rida.Kogus = (int)uusKogus;
+        }
+
+        korviVersioon++;
     }
 }
