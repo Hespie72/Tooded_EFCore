@@ -30,9 +30,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblToode = new System.Windows.Forms.Label();
-            this.comboToode = new System.Windows.Forms.ComboBox();
-            this.btnLisaKorvi = new System.Windows.Forms.Button();
             this.lblOstukorv = new System.Windows.Forms.Label();
             this.listOstukorv = new System.Windows.Forms.ListBox();
             this.btnEemalda = new System.Windows.Forms.Button();
@@ -40,34 +37,6 @@
             this.btnGenPDF = new System.Windows.Forms.Button();
             this.btnSaadaEmail = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            //
-            // lblToode
-            //
-            this.lblToode.AutoSize = true;
-            this.lblToode.Location = new System.Drawing.Point(20, 20);
-            this.lblToode.Name = "lblToode";
-            this.lblToode.Size = new System.Drawing.Size(42, 15);
-            this.lblToode.TabIndex = 0;
-            this.lblToode.Text = "Toode:";
-            //
-            // comboToode
-            //
-            this.comboToode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboToode.FormattingEnabled = true;
-            this.comboToode.Location = new System.Drawing.Point(20, 42);
-            this.comboToode.Name = "comboToode";
-            this.comboToode.Size = new System.Drawing.Size(400, 23);
-            this.comboToode.TabIndex = 1;
-            //
-            // btnLisaKorvi
-            //
-            this.btnLisaKorvi.Location = new System.Drawing.Point(440, 40);
-            this.btnLisaKorvi.Name = "btnLisaKorvi";
-            this.btnLisaKorvi.Size = new System.Drawing.Size(120, 27);
-            this.btnLisaKorvi.TabIndex = 2;
-            this.btnLisaKorvi.Text = "Lisa korvi";
-            this.btnLisaKorvi.UseVisualStyleBackColor = true;
-            this.btnLisaKorvi.Click += new System.EventHandler(this.btnLisaKorvi_Click);
             //
             // lblOstukorv
             //
@@ -138,9 +107,6 @@
             this.Controls.Add(this.btnEemalda);
             this.Controls.Add(this.listOstukorv);
             this.Controls.Add(this.lblOstukorv);
-            this.Controls.Add(this.btnLisaKorvi);
-            this.Controls.Add(this.comboToode);
-            this.Controls.Add(this.lblToode);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -153,9 +119,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblToode;
-        private System.Windows.Forms.ComboBox comboToode;
-        private System.Windows.Forms.Button btnLisaKorvi;
         private System.Windows.Forms.Label lblOstukorv;
         private System.Windows.Forms.ListBox listOstukorv;
         private System.Windows.Forms.Button btnEemalda;

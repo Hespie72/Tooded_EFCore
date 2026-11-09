@@ -117,7 +117,7 @@ public partial class Form2 : Form
         }
 
         var arveNupp = Kujundus.Nupp(
-            "Lisa arvele",
+            "Lisa korvi",
             btnArve_Click);
 
         arveNupp.Width = 280;
@@ -785,21 +785,17 @@ public partial class Form2 : Form
         object sender,
         EventArgs e)
     {
+        if (!valitudId.HasValue)
+        {
+            MessageBox.Show("Vali kõigepealt toode!");
+            return;
+        }
+
         Teosta(() =>
         {
-            using var db = new ToodedContext();
+            ArveForm.LisaKorvi(valitudId.Value);
 
-            var toode = valitudId.HasValue
-                ? db.Toodetabel
-                    .AsNoTracking()
-                    .FirstOrDefault(
-                        t => t.Id == valitudId.Value)
-                : null;
-
-            using var arve = new ArveForm
-            {
-                SelectedToode = toode
-            };
+            using var arve = new ArveForm();
 
             arve.ShowDialog(this);
         });
