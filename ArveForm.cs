@@ -13,9 +13,6 @@ public partial class ArveForm : Form
     private const string SaatjaEmail =
         "vitalya.abdulov.1979@gmail.com";
 
-    private const string GmailiRakenduseParool =
-        "iccp iixp npok vsnp";
-
     private readonly Button btnPluss = new()
     {
         Text = "+",
@@ -43,7 +40,11 @@ public partial class ArveForm : Form
     private long pdfVersioon = -1;
     private bool saatmine;
 
-    public Toode? SelectedToode { get; set; }
+    private readonly Button btnAvaPood = new()
+    {
+        Text = "Ava pood",
+        Size = new Size(150, 38)
+    };
 
     public ArveForm()
     {
@@ -94,18 +95,20 @@ public partial class ArveForm : Form
             Dock = DockStyle.Fill
         };
 
-        lblToode.Text = "Vali toode:";
-        lblToode.Margin = new Padding(3, 10, 10, 3);
-
-        comboToode.Width = 440;
-
-        btnLisaKorvi.Size = new Size(150, 38);
-
-        valik.Controls.AddRange(new Control[]
+        valik.Controls.Add(new Label
         {
-            lblToode,
-            comboToode,
-            btnLisaKorvi
+            Text = "Lisa tooteid poes toote kõrval oleva + nupuga.",
+            AutoSize = true,
+            Margin = new Padding(3, 10, 10, 3)
+        });
+
+        valik.Controls.Add(btnAvaPood);
+
+        btnAvaPood.Click += (s, e) => Teosta(() =>
+        {
+            using var pood = new Form3();
+            pood.ShowDialog(this);
+            UuendaKorv();
         });
 
         paigutus.Controls.Add(valik, 0, 1);
@@ -169,7 +172,7 @@ public partial class ArveForm : Form
         });
 
         Kujundus.Rakenda(this);
-        Kujundus.Rohuta(btnLisaKorvi);
+        Kujundus.Rohuta(btnAvaPood);
         Kujundus.Rohuta(btnGenPDF);
 
         btnEemalda.ForeColor = Color.Salmon;
@@ -217,25 +220,10 @@ public partial class ArveForm : Form
 
             if (muutus > 0)
             {
-                using var db = new ToodedContext();
-
-                var toode = db.Toodetabel
-                    .AsNoTracking()
-                    .FirstOrDefault(
-                        t => t.Id == rida.Toode.Id)
-                    ?? throw new InvalidOperationException(
-                        "Toodet enam ei ole.");
-
-                long kokku = ostukorv
-                    .Where(r => r.Toode.Id == toode.Id)
-                    .Sum(r => (long)r.Kogus);
-
-                if (kokku + muutus > toode.Kogus ||
-                    uusKogus > int.MaxValue)
-                {
-                    throw new InvalidOperationException(
-                        $"Laos on ainult {toode.Kogus} tk.");
-                }
+                LisaKorvi(rida.Toode.Id, muutus);
+                UuendaKorv();
+                listOstukorv.SelectedIndex = indeks;
+                return;
             }
 
             if (uusKogus <= 0)
@@ -286,98 +274,67 @@ public partial class ArveForm : Form
         object? sender,
         EventArgs e)
     {
-        Teosta(() =>
-        {
-            using var db = new ToodedContext();
-
-            comboToode.DisplayMember =
-                nameof(Toode.Toodenimetus);
-
-            comboToode.ValueMember =
-                nameof(Toode.Id);
-
-            comboToode.DataSource = db.Toodetabel
-                .AsNoTracking()
-                .OrderBy(t => t.Toodenimetus)
-                .ToList();
-
-            if (SelectedToode != null)
-            {
-                comboToode.SelectedValue =
-                    SelectedToode.Id;
-            }
-
-            UuendaKorv();
-        });
+        UuendaKorv();
     }
 
-    private void btnLisaKorvi_Click(
-        object sender,
-        EventArgs e)
+    // Kõik vaated lisavad tooteid samasse ostukorvi.
+    // Kontrollimiseks loetakse alati värsked andmed andmebaasist.
+    public static void LisaKorvi(int tooteId, int kogus = 1)
     {
-        if (comboToode.SelectedValue is not int id)
+        if (kogus <= 0)
         {
-            MessageBox.Show("Vali toode!");
-            return;
-        }
-
-        string sisend =
-            Microsoft.VisualBasic.Interaction.InputBox(
-                "Sisesta kogus",
-                "Kogus",
-                "1");
-
-        if (string.IsNullOrWhiteSpace(sisend))
-            return;
-
-        if (!int.TryParse(sisend, out int kogus) ||
-            kogus <= 0)
-        {
-            MessageBox.Show(
+            throw new InvalidOperationException(
                 "Sisesta positiivne täisarv!");
-
-            return;
         }
 
-        Teosta(() =>
+        using var db = new ToodedContext();
+
+        var toode = db.Toodetabel
+            .AsNoTracking()
+            .FirstOrDefault(t => t.Id == tooteId)
+            ?? throw new InvalidOperationException(
+                "Toodet ei leitud!");
+
+        if (!float.IsFinite(toode.Hind) ||
+            toode.Hind < 0 ||
+            toode.Hind > 100000000)
         {
-            using var db = new ToodedContext();
+            throw new InvalidOperationException(
+                "Toote hind on vigane.");
+        }
 
-            var toode = db.Toodetabel
-                .AsNoTracking()
-                .FirstOrDefault(t => t.Id == id)
-                ?? throw new InvalidOperationException(
-                    "Toodet ei leitud!");
+        long korvis = ostukorv
+            .Where(r => r.Toode.Id == tooteId)
+            .Sum(r => (long)r.Kogus);
 
-            if (!float.IsFinite(toode.Hind) ||
-                toode.Hind < 0 ||
-                toode.Hind > 100000000)
-            {
-                throw new InvalidOperationException(
-                    "Toote hind on vigane.");
-            }
+        long uusKogus = korvis + kogus;
 
-            long korvis = ostukorv
-                .Where(r => r.Toode.Id == id)
-                .Sum(r => (long)r.Kogus);
+        if (uusKogus > toode.Kogus ||
+            uusKogus > int.MaxValue)
+        {
+            throw new InvalidOperationException(
+                $"Laos on {toode.Kogus} tk. " +
+                $"Korvis on juba {korvis} tk.");
+        }
 
-            if (korvis + kogus > toode.Kogus)
-            {
-                throw new InvalidOperationException(
-                    $"Laos on {toode.Kogus} tk. " +
-                    $"Korvis on juba {korvis} tk.");
-            }
+        var rida = ostukorv.FirstOrDefault(
+            r => r.Toode.Id == tooteId);
 
+        if (rida == null)
+        {
             ostukorv.Add(new OstukorviRida
             {
                 Toode = toode,
                 Kogus = kogus
             });
+        }
+        else
+        {
+            rida.Toode = toode;
+            rida.Kogus = (int)uusKogus;
+        }
 
-            korviVersioon++;
-
-            UuendaKorv();
-        });
+        korviVersioon++;
     }
 
     private void btnEemalda_Click(
@@ -598,7 +555,9 @@ public partial class ArveForm : Form
         }
 
         string parool =
-            GmailiRakenduseParool.Replace(" ", "");
+            (Environment.GetEnvironmentVariable(
+                "TOODED_SMTP_APP_PASSWORD") ?? "")
+            .Replace(" ", "");
 
         if (string.IsNullOrWhiteSpace(parool) ||
             string.Equals(
@@ -607,7 +566,8 @@ public partial class ArveForm : Form
                 StringComparison.Ordinal))
         {
             MessageBox.Show(
-                "E-posti saatmine pole seadistatud.");
+                "E-posti saatmiseks seadista keskkonnamuutuja " +
+                "TOODED_SMTP_APP_PASSWORD.");
 
             return;
         }
@@ -630,7 +590,7 @@ public partial class ArveForm : Form
 
             foreach (var nupp in new[]
                      {
-                         btnLisaKorvi,
+                         btnAvaPood,
                          btnEemalda,
                          btnPluss,
                          btnMiinus,
@@ -692,7 +652,7 @@ public partial class ArveForm : Form
 
             foreach (var nupp in new[]
                      {
-                         btnLisaKorvi,
+                         btnAvaPood,
                          btnEemalda,
                          btnPluss,
                          btnMiinus,

@@ -27,6 +27,13 @@ public partial class Form3 : Form
         PlaceholderText = "Kuni (€)"
     };
 
+    private readonly Button btnOstukorv = new()
+    {
+        Text = "Ostukorv ja arve",
+        Size = new Size(190, 38),
+        Dock = DockStyle.Right
+    };
+
     private readonly Label lblTulemus = new()
     {
         Dock = DockStyle.Fill,
@@ -175,8 +182,37 @@ public partial class Form3 : Form
 
         tabPood.Dock = DockStyle.Fill;
 
-        paigutus.Controls.Add(
-            Kujundus.Pealkiri("Pood"), 0, 0);
+        var pais = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 1
+        };
+
+        pais.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Percent, 100));
+        pais.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Absolute, 200));
+
+        pais.Controls.Add(Kujundus.Pealkiri("Pood"), 0, 0);
+        pais.Controls.Add(btnOstukorv, 1, 0);
+        paigutus.Controls.Add(pais, 0, 0);
+
+        btnOstukorv.Click += (s, e) =>
+        {
+            try
+            {
+                using var arve = new ArveForm();
+                arve.ShowDialog(this);
+            }
+            catch (Exception viga)
+            {
+                MessageBox.Show(
+                    "Arve avamine ebaõnnestus:\n" +
+                    viga.Message,
+                    "Viga");
+            }
+        };
 
         paigutus.Controls.Add(filtrid, 0, 1);
         paigutus.Controls.Add(lblTulemus, 0, 2);
@@ -449,7 +485,8 @@ public partial class Form3 : Form
 
         var nupp = new Button
         {
-            Text = "Vali ja lisa korvi",
+            Text = "+",
+            AccessibleName = $"Lisa {toode.Toodenimetus} ostukorvi",
             Size = new Size(185, 32),
             Enabled = toode.Kogus > 0
         };
@@ -458,17 +495,15 @@ public partial class Form3 : Form
         {
             try
             {
-                using var arve = new ArveForm
-                {
-                    SelectedToode = toode
-                };
-
-                arve.ShowDialog(this);
+                ArveForm.LisaKorvi(toode.Id);
+                lblTulemus.ForeColor = Kujundus.Vaikne;
+                lblTulemus.Text =
+                    $"Lisatud ostukorvi: {toode.Toodenimetus} (+1)";
             }
             catch (Exception viga)
             {
                 MessageBox.Show(
-                    "Arve avamine ebaõnnestus:\n" +
+                    "Toote lisamine ebaõnnestus:\n" +
                     viga.Message,
                     "Viga");
             }
