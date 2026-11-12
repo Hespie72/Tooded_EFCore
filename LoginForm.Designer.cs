@@ -1,3 +1,8 @@
+#nullable disable
+
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace Tooded_EFCore
 {
     partial class LoginForm
@@ -6,105 +11,143 @@ namespace Tooded_EFCore
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing)
+                components?.Dispose();
+
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
         private void InitializeComponent()
         {
-            this.lblEmail = new System.Windows.Forms.Label();
-            this.txtEmail = new System.Windows.Forms.TextBox();
-            this.lblParool = new System.Windows.Forms.Label();
-            this.txtParool = new System.Windows.Forms.TextBox();
-            this.btnLogin = new System.Windows.Forms.Button();
-            this.lblVeateade = new System.Windows.Forms.Label();
-            this.SuspendLayout();
-            //
+            paneel = new FlowLayoutPanel();
+            lblPealkiri = new Label();
+            lblJuhis = new Label();
+            lblEmail = new Label();
+            txtEmail = new TextBox();
+            lblParool = new Label();
+            txtParool = new TextBox();
+            btnLogin = new Button();
+            lblVeateade = new Label();
+
+            paneel.SuspendLayout();
+            SuspendLayout();
+
+            // paneel
+            paneel.Name = "paneel";
+            paneel.Dock = DockStyle.Fill;
+            paneel.FlowDirection = FlowDirection.TopDown;
+            paneel.WrapContents = false;
+            paneel.AutoScroll = true;
+            paneel.Padding = new Padding(35);
+
+            // lblPealkiri
+            lblPealkiri.Name = "lblPealkiri";
+            lblPealkiri.Text = "Tere tulemast!";
+            lblPealkiri.AutoSize = true;
+            lblPealkiri.BackColor = Color.Transparent;
+            lblPealkiri.Font = new Font(
+                "Segoe UI", 19F, FontStyle.Bold);
+            lblPealkiri.Margin = new Padding(3, 3, 3, 16);
+
+            // lblJuhis
+            lblJuhis.Name = "lblJuhis";
+            lblJuhis.Text = "Jätkamiseks logi oma kontole sisse.";
+            lblJuhis.AutoSize = true;
+            lblJuhis.BackColor = Color.Transparent;
+
             // lblEmail
-            //
-            this.lblEmail.AutoSize = true;
-            this.lblEmail.Location = new System.Drawing.Point(20, 20);
-            this.lblEmail.Name = "lblEmail";
-            this.lblEmail.Size = new System.Drawing.Size(39, 15);
-            this.lblEmail.TabIndex = 0;
-            this.lblEmail.Text = "Email:";
-            //
+            lblEmail.Name = "lblEmail";
+            lblEmail.Text = "E-post";
+            lblEmail.AutoSize = true;
+            lblEmail.BackColor = Color.Transparent;
+            lblEmail.Margin = new Padding(3, 22, 3, 5);
+
             // txtEmail
-            //
-            this.txtEmail.Location = new System.Drawing.Point(20, 42);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(260, 23);
-            this.txtEmail.TabIndex = 1;
-            //
+            txtEmail.Name = "txtEmail";
+            txtEmail.Size = new Size(320, 25);
+            txtEmail.PlaceholderText = "nimi@example.com";
+            txtEmail.BackColor = Color.FromArgb(29, 35, 47);
+            txtEmail.ForeColor = Color.FromArgb(235, 239, 247);
+            txtEmail.BorderStyle = BorderStyle.FixedSingle;
+            txtEmail.TabIndex = 0;
+
             // lblParool
-            //
-            this.lblParool.AutoSize = true;
-            this.lblParool.Location = new System.Drawing.Point(20, 80);
-            this.lblParool.Name = "lblParool";
-            this.lblParool.Size = new System.Drawing.Size(48, 15);
-            this.lblParool.TabIndex = 2;
-            this.lblParool.Text = "Parool:";
-            //
+            lblParool.Name = "lblParool";
+            lblParool.Text = "Parool:";
+            lblParool.AutoSize = true;
+            lblParool.BackColor = Color.Transparent;
+            lblParool.Margin = new Padding(3, 14, 3, 5);
+
             // txtParool
-            //
-            this.txtParool.Location = new System.Drawing.Point(20, 102);
-            this.txtParool.Name = "txtParool";
-            this.txtParool.PasswordChar = '*';
-            this.txtParool.Size = new System.Drawing.Size(260, 23);
-            this.txtParool.TabIndex = 3;
-            //
+            txtParool.Name = "txtParool";
+            txtParool.Size = new Size(320, 25);
+            txtParool.UseSystemPasswordChar = true;
+            txtParool.BackColor = Color.FromArgb(29, 35, 47);
+            txtParool.ForeColor = Color.FromArgb(235, 239, 247);
+            txtParool.BorderStyle = BorderStyle.FixedSingle;
+            txtParool.TabIndex = 1;
+
             // btnLogin
-            //
-            this.btnLogin.Location = new System.Drawing.Point(20, 145);
-            this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(260, 32);
-            this.btnLogin.TabIndex = 4;
-            this.btnLogin.Text = "Logi sisse";
-            this.btnLogin.UseVisualStyleBackColor = true;
-            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
-            //
+            btnLogin.Name = "btnLogin";
+            btnLogin.Text = "Logi sisse";
+            btnLogin.Size = new Size(320, 44);
+            btnLogin.Margin = new Padding(3, 22, 3, 8);
+            btnLogin.BackColor = Color.FromArgb(77, 130, 245);
+            btnLogin.ForeColor = Color.FromArgb(235, 239, 247);
+            btnLogin.FlatStyle = FlatStyle.Flat;
+            btnLogin.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnLogin.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnLogin.UseVisualStyleBackColor = false;
+            btnLogin.Cursor = Cursors.Hand;
+            btnLogin.TabIndex = 2;
+            btnLogin.Click += btnLogin_Click;
+
             // lblVeateade
-            //
-            this.lblVeateade.AutoSize = true;
-            this.lblVeateade.ForeColor = System.Drawing.Color.Firebrick;
-            this.lblVeateade.Location = new System.Drawing.Point(20, 190);
-            this.lblVeateade.Name = "lblVeateade";
-            this.lblVeateade.Size = new System.Drawing.Size(0, 15);
-            this.lblVeateade.TabIndex = 5;
-            //
+            lblVeateade.Name = "lblVeateade";
+            lblVeateade.AutoSize = true;
+            lblVeateade.BackColor = Color.Transparent;
+            lblVeateade.ForeColor = Color.Salmon;
+
+            paneel.Controls.Add(lblPealkiri);
+            paneel.Controls.Add(lblJuhis);
+            paneel.Controls.Add(lblEmail);
+            paneel.Controls.Add(txtEmail);
+            paneel.Controls.Add(lblParool);
+            paneel.Controls.Add(txtParool);
+            paneel.Controls.Add(btnLogin);
+            paneel.Controls.Add(lblVeateade);
+
             // LoginForm
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(300, 225);
-            this.Controls.Add(this.lblVeateade);
-            this.Controls.Add(this.btnLogin);
-            this.Controls.Add(this.txtParool);
-            this.Controls.Add(this.lblParool);
-            this.Controls.Add(this.txtEmail);
-            this.Controls.Add(this.lblEmail);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "LoginForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Sisselogimine";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Font = new Font("Segoe UI", 10F);
+            BackColor = Color.FromArgb(18, 22, 30);
+            ForeColor = Color.FromArgb(235, 239, 247);
+            ClientSize = new Size(410, 410);
+            Controls.Add(paneel);
+            AcceptButton = btnLogin;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            StartPosition = FormStartPosition.CenterScreen;
+            Name = "LoginForm";
+            Text = "Sisselogimine";
+
+            paneel.ResumeLayout(false);
+            paneel.PerformLayout();
+            ResumeLayout(false);
         }
 
-        #endregion
-
-        private System.Windows.Forms.Label lblEmail;
-        private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.Label lblParool;
-        private System.Windows.Forms.TextBox txtParool;
-        private System.Windows.Forms.Button btnLogin;
-        private System.Windows.Forms.Label lblVeateade;
+        private FlowLayoutPanel paneel;
+        private Label lblPealkiri;
+        private Label lblJuhis;
+        private Label lblEmail;
+        private TextBox txtEmail;
+        private Label lblParool;
+        private TextBox txtParool;
+        private Button btnLogin;
+        private Label lblVeateade;
     }
 }

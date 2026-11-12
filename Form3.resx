@@ -117,4 +117,344 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="&gt;&gt;chkLaos.Name" xml:space="preserve">
+    <value>chkLaos</value>
+  </data>
+  <data name="&gt;&gt;txtOtsing.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;lblTulemus.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;txtHindKuni.Name" xml:space="preserve">
+    <value>txtHindKuni</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="tabPood.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 2, 3, 2</value>
+  </data>
+  <data name="&gt;&gt;txtHindAlates.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;txtHindKuni.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPood.Name" xml:space="preserve">
+    <value>tabPood</value>
+  </data>
+  <data name="&gt;&gt;comboJarjestus.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;tabPood.Parent" xml:space="preserve">
+    <value>paigutus</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="txtHindAlates.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 11</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>923, 612</value>
+  </data>
+  <data name="&gt;&gt;txtHindAlates.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;chkLaos.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;filtrid.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="comboJarjestus.Items2" xml:space="preserve">
+    <value>Hind kasvavalt</value>
+  </data>
+  <data name="btnPuhasta.Location" type="System.Drawing.Point, System.Drawing">
+    <value>960, 11</value>
+  </data>
+  <data name="&gt;&gt;lblAlates.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;paigutus.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="chkLaos.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;tabPood.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="btnPuhasta.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;lblOtsing.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtHindKuni.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblPealkiri.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="lblAlates.Location" type="System.Drawing.Point, System.Drawing">
+    <value>280, 15</value>
+  </data>
+  <data name="&gt;&gt;btnKorv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblJarjestus.Location" type="System.Drawing.Point, System.Drawing">
+    <value>602, 15</value>
+  </data>
+  <data name="comboJarjestus.Items1" xml:space="preserve">
+    <value>Nimetus Z–A</value>
+  </data>
+  <data name="&gt;&gt;lblOtsing.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;lblPealkiri.Parent" xml:space="preserve">
+    <value>paigutus</value>
+  </data>
+  <data name="&gt;&gt;lblKuni.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="btnKorv.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="lblTulemus.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="lblAlates.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="lblOtsing.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;comboJarjestus.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="tabPood.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lblAlates.Name" xml:space="preserve">
+    <value>lblAlates</value>
+  </data>
+  <data name="&gt;&gt;lblAlates.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;filtrid.Name" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;txtOtsing.Name" xml:space="preserve">
+    <value>txtOtsing</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>7, 15</value>
+  </data>
+  <data name="paigutus.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="lblPealkiri.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="filtrid.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;lblPealkiri.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkLaos.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;lblJarjestus.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnPuhasta.Name" xml:space="preserve">
+    <value>btnPuhasta</value>
+  </data>
+  <data name="&gt;&gt;tabPood.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblJarjestus.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;filtrid.Parent" xml:space="preserve">
+    <value>paigutus</value>
+  </data>
+  <data name="&gt;&gt;lblJarjestus.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;paigutus.Name" xml:space="preserve">
+    <value>paigutus</value>
+  </data>
+  <data name="txtOtsing.Location" type="System.Drawing.Point, System.Drawing">
+    <value>54, 11</value>
+  </data>
+  <data name="&gt;&gt;lblKuni.Name" xml:space="preserve">
+    <value>lblKuni</value>
+  </data>
+  <data name="paigutus.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lblKuni.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="comboJarjestus.Items3" xml:space="preserve">
+    <value>Hind kahanevalt</value>
+  </data>
+  <data name="&gt;&gt;lblKuni.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="txtOtsing.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtOtsing.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="lblTulemus.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 160</value>
+  </data>
+  <data name="tabPood.Size" type="System.Drawing.Size, System.Drawing">
+    <value>900, 600</value>
+  </data>
+  <data name="&gt;&gt;lblTulemus.Name" xml:space="preserve">
+    <value>lblTulemus</value>
+  </data>
+  <data name="&gt;&gt;lblTulemus.Parent" xml:space="preserve">
+    <value>paigutus</value>
+  </data>
+  <data name="comboJarjestus.Location" type="System.Drawing.Point, System.Drawing">
+    <value>667, 11</value>
+  </data>
+  <data name="comboJarjestus.Items" xml:space="preserve">
+    <value>Nimetus A–Z</value>
+  </data>
+  <data name="&gt;&gt;btnPuhasta.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblJarjestus.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;filtrid.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="txtHindKuni.Location" type="System.Drawing.Point, System.Drawing">
+    <value>506, 11</value>
+  </data>
+  <data name="tabPood.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 10</value>
+  </data>
+  <data name="&gt;&gt;paigutus.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="lblPealkiri.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtHindAlates.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtHindKuni.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>950, 650</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="paigutus.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="lblPealkiri" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="filtrid" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblTulemus" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="tabPood" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Absolute,60,Absolute,100,Absolute,28,Percent,100" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="&gt;&gt;paigutus.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;chkLaos.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;lblTulemus.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnKorv.Name" xml:space="preserve">
+    <value>btnKorv</value>
+  </data>
+  <data name="&gt;&gt;txtHindAlates.Name" xml:space="preserve">
+    <value>txtHindAlates</value>
+  </data>
+  <data name="filtrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 63</value>
+  </data>
+  <data name="&gt;&gt;btnKorv.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Pood</value>
+  </data>
+  <data name="&gt;&gt;lblAlates.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="&gt;&gt;comboJarjestus.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtOtsing.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblOtsing.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 15</value>
+  </data>
+  <data name="&gt;&gt;comboJarjestus.Name" xml:space="preserve">
+    <value>comboJarjestus</value>
+  </data>
+  <data name="lblKuni.Location" type="System.Drawing.Point, System.Drawing">
+    <value>462, 15</value>
+  </data>
+  <data name="&gt;&gt;btnPuhasta.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 2, 3, 2</value>
+  </data>
+  <data name="&gt;&gt;txtHindKuni.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;lblOtsing.Name" xml:space="preserve">
+    <value>lblOtsing</value>
+  </data>
+  <data name="lblKuni.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="txtHindAlates.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="chkLaos.Location" type="System.Drawing.Point, System.Drawing">
+    <value>862, 14</value>
+  </data>
+  <data name="comboJarjestus.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;lblJarjestus.Name" xml:space="preserve">
+    <value>lblJarjestus</value>
+  </data>
+  <data name="&gt;&gt;lblOtsing.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>Form3</value>
+  </data>
+  <data name="&gt;&gt;lblPealkiri.Name" xml:space="preserve">
+    <value>lblPealkiri</value>
+  </data>
+  <data name="&gt;&gt;btnKorv.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;btnPuhasta.Parent" xml:space="preserve">
+    <value>filtrid</value>
+  </data>
+  <data name="btnKorv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 48</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
+    <value>en</value>
+  </metadata>
 </root>

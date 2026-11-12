@@ -9,231 +9,105 @@ public partial class Form3 : Form
     private List<Kategooria> kategooriad = new();
     private bool andmedLaetud;
 
-    private readonly TextBox txtOtsing = new()
-    {
-        Width = 220,
-        PlaceholderText = "Sisesta toote nimi"
-    };
-
-    private readonly TextBox txtHindAlates = new()
-    {
-        Width = 90,
-        PlaceholderText = "Alates (€)"
-    };
-
-    private readonly TextBox txtHindKuni = new()
-    {
-        Width = 90,
-        PlaceholderText = "Kuni (€)"
-    };
-
-    private readonly Label lblTulemus = new()
-    {
-        Dock = DockStyle.Fill,
-        AutoSize = false,
-        Padding = new Padding(10, 0, 0, 0)
-    };
-
-    private readonly ComboBox comboJarjestus = new()
-    {
-        Width = 180,
-        DropDownStyle = ComboBoxStyle.DropDownList
-    };
-
-    private readonly CheckBox chkLaos = new()
-    {
-        Text = "Ainult laos",
-        AutoSize = true,
-        Margin = new Padding(12, 6, 3, 3)
-    };
-
     public Form3()
     {
         InitializeComponent();
-
-        ClientSize = new Size(1160, 800);
-        MinimumSize = new Size(950, 650);
-
-        LisaFiltrid();
-        Kujundus.Rakenda(this);
-
-        Load += (s, e) =>
-        {
-            try
-            {
-                using var db = new ToodedContext();
-
-                kategooriad = db.Kategooriatabel
-                    .AsNoTracking()
-                    .Include(k => k.Tooded)
-                    .OrderBy(k => k.Kategooria_nimetus)
-                    .ToList();
-
-                andmedLaetud = true;
-
-                RakendaFiltrid();
-            }
-            catch (Exception viga)
-            {
-                MessageBox.Show(
-                    "Poe laadimine ebaõnnestus:\n" +
-                    viga.Message,
-                    "Viga");
-            }
-        };
+        comboJarjestus.SelectedIndex = 0;
     }
 
-    private void LisaFiltrid()
+    private void Form3_Load(object? sender, EventArgs e)
     {
-        comboJarjestus.Items.AddRange(new object[]
+        if (System.ComponentModel.LicenseManager.UsageMode ==
+            System.ComponentModel.LicenseUsageMode.Designtime)
+            return;
+
+        try
         {
-            "Nimetus A–Z",
-            "Nimetus Z–A",
-            "Hind kasvavalt",
-            "Hind kahanevalt"
-        });
+            using var db = new ToodedContext();
 
-        comboJarjestus.SelectedIndex = 0;
-
-        var filtrid = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            Padding = new Padding(8),
-            WrapContents = true
-        };
-
-        Label Silt(string tekst) => new()
-        {
-            Text = tekst,
-            AutoSize = true,
-            Margin = new Padding(3, 7, 3, 3)
-        };
-
-        var puhastaNupp = new Button
-        {
-            Text = "Puhasta filtrid",
-            AutoSize = true
-        };
-
-        puhastaNupp.Click += (s, e) =>
-        {
-            andmedLaetud = false;
-
-            txtOtsing.Clear();
-            txtHindAlates.Clear();
-            txtHindKuni.Clear();
-
-            comboJarjestus.SelectedIndex = 0;
-            chkLaos.Checked = false;
+            kategooriad = db.Kategooriatabel
+                .AsNoTracking()
+                .Include(k => k.Tooded)
+                .OrderBy(k => k.Kategooria_nimetus)
+                .ToList();
 
             andmedLaetud = true;
-
             RakendaFiltrid();
-        };
-
-        filtrid.Controls.AddRange(new Control[]
+        }
+        catch (Exception viga)
         {
-            Silt("Otsi:"),
-            txtOtsing,
+            MessageBox.Show(
+                "Poe laadimine ebaõnnestus:\n" + viga.Message,
+                "Viga");
+        }
+    }
 
-            Silt("Hind alates:"),
-            txtHindAlates,
+    private void Filtrid_Changed(object? sender, EventArgs e)
+    {
+        RakendaFiltrid();
+    }
 
-            Silt("kuni:"),
-            txtHindKuni,
+    private void btnPuhasta_Click(object? sender, EventArgs e)
+    {
+        andmedLaetud = false;
 
-            Silt("Sorteeri:"),
-            comboJarjestus,
+        txtOtsing.Clear();
+        txtHindAlates.Clear();
+        txtHindKuni.Clear();
+        comboJarjestus.SelectedIndex = 0;
+        chkLaos.Checked = false;
 
-            chkLaos,
-            puhastaNupp
-        });
+        andmedLaetud = true;
+        RakendaFiltrid();
+    }
 
-        var korviNupp = new Button
+    private void btnKorv_Click(object? sender, EventArgs e)
+    {
+        try
         {
-            Text = "Ostukorv ja arve",
-            AutoSize = true
-        };
-
-        korviNupp.Click += (s, e) =>
+            using var arve = new ArveForm();
+            arve.ShowDialog(this);
+        }
+        catch (Exception viga)
         {
-            try
-            {
-                using var arve = new ArveForm();
-                arve.ShowDialog(this);
-            }
-            catch (Exception viga)
-            {
-                MessageBox.Show(
-                    "Arve avamine ebaõnnestus:\n" +
-                    viga.Message,
-                    "Viga");
-            }
-        };
+            MessageBox.Show(
+                "Arve avamine ebaõnnestus:\n" + viga.Message,
+                "Viga");
+        }
+    }
 
-        filtrid.Controls.Add(korviNupp);
+    private void tabPood_DrawItem(
+        object? sender, DrawItemEventArgs e)
+    {
+        if (e.Index < 0)
+            return;
 
-        var paigutus = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            ColumnCount = 1,
-            RowCount = 4
-        };
+        using var brush = new SolidBrush(
+            tabPood.SelectedIndex == e.Index
+                ? Kujundus.Aktsent
+                : Kujundus.Pind);
 
-        paigutus.ColumnStyles.Add(
-            new ColumnStyle(SizeType.Percent, 100));
+        e.Graphics.FillRectangle(brush, e.Bounds);
 
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 60));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 100));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 28));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Percent, 100));
-
-        Controls.Remove(tabPood);
-
-        tabPood.Dock = DockStyle.Fill;
-
-        paigutus.Controls.Add(
-            Kujundus.Pealkiri("Pood"), 0, 0);
-
-        paigutus.Controls.Add(filtrid, 0, 1);
-        paigutus.Controls.Add(lblTulemus, 0, 2);
-        paigutus.Controls.Add(tabPood, 0, 3);
-
-        Controls.Add(paigutus);
-
-        comboJarjestus.SelectedIndexChanged +=
-            (s, e) => RakendaFiltrid();
-
-        chkLaos.CheckedChanged +=
-            (s, e) => RakendaFiltrid();
-
-        txtOtsing.TextChanged +=
-            (s, e) => RakendaFiltrid();
-
-        txtHindAlates.TextChanged +=
-            (s, e) => RakendaFiltrid();
-
-        txtHindKuni.TextChanged +=
-            (s, e) => RakendaFiltrid();
+        TextRenderer.DrawText(
+            e.Graphics,
+            tabPood.TabPages[e.Index].Text,
+            tabPood.Font,
+            e.Bounds,
+            Kujundus.Tekst,
+            TextFormatFlags.HorizontalCenter |
+            TextFormatFlags.VerticalCenter |
+            TextFormatFlags.EndEllipsis);
     }
 
     private static bool LoeHind(
-        string tekst,
-        out decimal? hind)
+        string tekst, out decimal? hind)
     {
         hind = null;
 
         if (string.IsNullOrWhiteSpace(tekst))
             return true;
 
-        // Lubab kümnendmärgina nii koma kui ka punkti.
         string vaartus = tekst.Trim().Replace(',', '.');
 
         if (!decimal.TryParse(
@@ -242,12 +116,9 @@ public partial class Form3 : Form
                 CultureInfo.InvariantCulture,
                 out decimal tulemus)
             || tulemus < 0)
-        {
             return false;
-        }
 
         hind = tulemus;
-
         return true;
     }
 
@@ -256,30 +127,20 @@ public partial class Form3 : Form
         if (!andmedLaetud)
             return;
 
-        if (!LoeHind(
-                txtHindAlates.Text,
-                out decimal? alates)
-            || !LoeHind(
-                txtHindKuni.Text,
-                out decimal? kuni))
+        if (!LoeHind(txtHindAlates.Text, out decimal? alates)
+            || !LoeHind(txtHindKuni.Text, out decimal? kuni))
         {
             lblTulemus.ForeColor = Color.Salmon;
-
             lblTulemus.Text =
                 "Sisesta korrektne mittenegatiivne hind.";
-
             return;
         }
 
-        if (alates.HasValue &&
-            kuni.HasValue &&
-            alates > kuni)
+        if (alates.HasValue && kuni.HasValue && alates > kuni)
         {
             lblTulemus.ForeColor = Color.Salmon;
-
             lblTulemus.Text =
                 "Alghind ei tohi olla lõpphinnast suurem.";
-
             return;
         }
 
@@ -291,14 +152,11 @@ public partial class Form3 : Form
             kuni.HasValue ||
             chkLaos.Checked;
 
-        string? aktiivne =
-            tabPood.SelectedTab?.Name;
+        string? aktiivne = tabPood.SelectedTab?.Name;
 
-        // Vabastab eelmise vaate ja selle pildid.
         while (tabPood.TabPages.Count > 0)
         {
             var leht = tabPood.TabPages[0];
-
             tabPood.TabPages.Remove(leht);
             leht.Dispose();
         }
@@ -317,15 +175,11 @@ public partial class Form3 : Form
                     (t.Toodenimetus ?? "").Contains(
                         otsing,
                         StringComparison.CurrentCultureIgnoreCase)
-
                     && (!alates.HasValue ||
                         t.Hind >= (float)alates.Value)
-
                     && (!kuni.HasValue ||
                         t.Hind <= (float)kuni.Value)
-
-                    && (!chkLaos.Checked ||
-                        t.Kogus > 0))
+                    && (!chkLaos.Checked || t.Kogus > 0))
                 .ToList();
 
             tooted = comboJarjestus.SelectedIndex switch
@@ -352,8 +206,7 @@ public partial class Form3 : Form
             if (filtreeritud && tooted.Count == 0)
                 continue;
 
-            var leht = new TabPage(
-                kat.Kategooria_nimetus)
+            var leht = new TabPage(kat.Kategooria_nimetus)
             {
                 Name = kat.Id.ToString()
             };
@@ -371,19 +224,15 @@ public partial class Form3 : Form
 
             foreach (var toode in tooted)
             {
-                paigutus.Controls.Add(
-                    LooTooteKaart(toode));
-
+                paigutus.Controls.Add(LooTooteKaart(toode));
                 arv++;
             }
         }
 
-        // Säilitab võimalusel varem valitud kategooria.
         if (aktiivne != null &&
             tabPood.TabPages.ContainsKey(aktiivne))
         {
-            tabPood.SelectedTab =
-                tabPood.TabPages[aktiivne];
+            tabPood.SelectedTab = tabPood.TabPages[aktiivne];
         }
 
         lblTulemus.ForeColor = Kujundus.Vaikne;
@@ -397,7 +246,6 @@ public partial class Form3 : Form
                     : "Kategooriaid pole veel lisatud");
 
             Kujundus.Rakenda(tyhiLeht);
-
             tabPood.TabPages.Add(tyhiLeht);
         }
     }
@@ -419,8 +267,7 @@ public partial class Form3 : Form
             SizeMode = PictureBoxSizeMode.Zoom
         };
 
-        string nimi = Path.GetFileName(
-            toode.Pilt ?? "");
+        string nimi = Path.GetFileName(toode.Pilt ?? "");
 
         string tee = Path.Combine(
             Environment.GetFolderPath(
@@ -446,8 +293,7 @@ public partial class Form3 : Form
         {
             if (File.Exists(tee))
             {
-                using var algne =
-                    Image.FromFile(tee);
+                using var algne = Image.FromFile(tee);
 
                 var koopia = new Bitmap(algne);
 
@@ -465,17 +311,19 @@ public partial class Form3 : Form
         }
 
         pildikast.Click += (s, e) =>
+        {
             MessageBox.Show(
                 $"{toode.Toodenimetus}\n" +
                 $"Hind: {toode.Hind:0.00} €\n" +
                 $"Laos: {toode.Kogus} tk",
                 "Toote andmed");
+        };
 
         var nupp = new Button
         {
             Text = "+",
             AccessibleName =
-        $"Lisa {toode.Toodenimetus} ostukorvi",
+                $"Lisa {toode.Toodenimetus} ostukorvi",
             Size = new Size(185, 32),
             Enabled = toode.Kogus > 0
         };
@@ -493,8 +341,7 @@ public partial class Form3 : Form
             catch (Exception viga)
             {
                 MessageBox.Show(
-                    "Toote lisamine ebaõnnestus:\n" +
-                    viga.Message,
+                    "Toote lisamine ebaõnnestus:\n" + viga.Message,
                     "Viga");
             }
         };
@@ -505,8 +352,7 @@ public partial class Form3 : Form
         {
             Text =
                 $"{toode.Toodenimetus}\n" +
-                $"{toode.Hind:0.00} € | " +
-                $"Laos: {toode.Kogus} tk",
+                $"{toode.Hind:0.00} € | Laos: {toode.Kogus} tk",
 
             Size = new Size(185, 55)
         });
@@ -514,16 +360,13 @@ public partial class Form3 : Form
         kaart.Controls.Add(nupp);
 
         Kujundus.Rakenda(kaart);
-
         kaart.BackColor = Kujundus.Pind;
-
         Kujundus.Rohuta(nupp);
 
         return kaart;
     }
 
-    protected override void OnFormClosed(
-        FormClosedEventArgs e)
+    protected override void OnFormClosed(FormClosedEventArgs e)
     {
         foreach (var pilt in pildid)
             pilt.Dispose();

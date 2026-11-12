@@ -1,167 +1,275 @@
-﻿namespace Tooded_EFCore
-{
+﻿#nullable disable
 
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Tooded_EFCore
+{
     partial class ArveForm
     {
-
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing)
+                components?.Dispose();
+
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
-            this.lblToode = new System.Windows.Forms.Label();
-            this.comboToode = new System.Windows.Forms.ComboBox();
-            this.btnLisaKorvi = new System.Windows.Forms.Button();
-            this.lblOstukorv = new System.Windows.Forms.Label();
-            this.listOstukorv = new System.Windows.Forms.ListBox();
-            this.btnEemalda = new System.Windows.Forms.Button();
-            this.lblKokku = new System.Windows.Forms.Label();
-            this.btnGenPDF = new System.Windows.Forms.Button();
-            this.btnSaadaEmail = new System.Windows.Forms.Button();
-            this.SuspendLayout();
-            //
+            paigutus = new TableLayoutPanel();
+            lblPealkiri = new Label();
+            valik = new FlowLayoutPanel();
+            lblToode = new Label();
+            btnLisaKorvi = new Button();
+            listOstukorv = new ListBox();
+            lblKokku = new Label();
+            nupud = new FlowLayoutPanel();
+            btnMiinus = new Button();
+            btnPluss = new Button();
+            btnEemalda = new Button();
+            btnGenPDF = new Button();
+            btnAvaPdf = new Button();
+            btnSaadaEmail = new Button();
+
+            paigutus.SuspendLayout();
+            valik.SuspendLayout();
+            nupud.SuspendLayout();
+            SuspendLayout();
+
+            // paigutus
+            paigutus.Name = "paigutus";
+            paigutus.Dock = DockStyle.Fill;
+            paigutus.Padding = new Padding(20);
+            paigutus.ColumnCount = 1;
+            paigutus.RowCount = 5;
+            paigutus.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 100F));
+            paigutus.RowStyles.Add(
+                new RowStyle(SizeType.Absolute, 60F));
+            paigutus.RowStyles.Add(
+                new RowStyle(SizeType.Absolute, 75F));
+            paigutus.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 100F));
+            paigutus.RowStyles.Add(
+                new RowStyle(SizeType.Absolute, 50F));
+            paigutus.RowStyles.Add(
+                new RowStyle(SizeType.Absolute, 65F));
+
+            // lblPealkiri
+            lblPealkiri.Name = "lblPealkiri";
+            lblPealkiri.Text = "Ostukorv ja arve";
+            lblPealkiri.AutoSize = true;
+            lblPealkiri.BackColor = Color.Transparent;
+            lblPealkiri.Font = new Font(
+                "Segoe UI", 19F, FontStyle.Bold);
+            lblPealkiri.Margin = new Padding(3, 3, 3, 16);
+
+            // valik
+            valik.Name = "valik";
+            valik.Dock = DockStyle.Fill;
+
             // lblToode
-            //
-            this.lblToode.AutoSize = true;
-            this.lblToode.Location = new System.Drawing.Point(20, 20);
-            this.lblToode.Name = "lblToode";
-            this.lblToode.Size = new System.Drawing.Size(42, 15);
-            this.lblToode.TabIndex = 0;
-            this.lblToode.Text = "Toode:";
-            //
-            // comboToode
-            //
-            this.comboToode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboToode.FormattingEnabled = true;
-            this.comboToode.Location = new System.Drawing.Point(20, 42);
-            this.comboToode.Name = "comboToode";
-            this.comboToode.Size = new System.Drawing.Size(400, 23);
-            this.comboToode.TabIndex = 1;
-            //
+            lblToode.Name = "lblToode";
+            lblToode.Text =
+                "Lisa tooteid poes toote kõrval oleva + nupuga.";
+            lblToode.AutoSize = true;
+            lblToode.BackColor = Color.Transparent;
+            lblToode.Margin = new Padding(3, 10, 10, 3);
+
             // btnLisaKorvi
-            //
-            this.btnLisaKorvi.Location = new System.Drawing.Point(440, 40);
-            this.btnLisaKorvi.Name = "btnLisaKorvi";
-            this.btnLisaKorvi.Size = new System.Drawing.Size(120, 27);
-            this.btnLisaKorvi.TabIndex = 2;
-            this.btnLisaKorvi.Text = "Lisa korvi";
-            this.btnLisaKorvi.UseVisualStyleBackColor = true;
-            this.btnLisaKorvi.Click += new System.EventHandler(this.btnLisaKorvi_Click);
-            //
-            // lblOstukorv
-            //
-            this.lblOstukorv.AutoSize = true;
-            this.lblOstukorv.Location = new System.Drawing.Point(20, 85);
-            this.lblOstukorv.Name = "lblOstukorv";
-            this.lblOstukorv.Size = new System.Drawing.Size(57, 15);
-            this.lblOstukorv.TabIndex = 3;
-            this.lblOstukorv.Text = "Ostukorv:";
-            //
+            btnLisaKorvi.Name = "btnLisaKorvi";
+            btnLisaKorvi.Text = "Ava pood";
+            btnLisaKorvi.Size = new Size(150, 38);
+            btnLisaKorvi.BackColor = Color.FromArgb(77, 130, 245);
+            btnLisaKorvi.ForeColor = Color.FromArgb(235, 239, 247);
+            btnLisaKorvi.FlatStyle = FlatStyle.Flat;
+            btnLisaKorvi.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnLisaKorvi.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnLisaKorvi.UseVisualStyleBackColor = false;
+            btnLisaKorvi.Cursor = Cursors.Hand;
+            btnLisaKorvi.TabIndex = 0;
+            btnLisaKorvi.Click += btnLisaKorvi_Click;
+
             // listOstukorv
-            //
-            this.listOstukorv.FormattingEnabled = true;
-            this.listOstukorv.ItemHeight = 15;
-            this.listOstukorv.Location = new System.Drawing.Point(20, 107);
-            this.listOstukorv.Name = "listOstukorv";
-            this.listOstukorv.Size = new System.Drawing.Size(540, 169);
-            this.listOstukorv.TabIndex = 4;
-            //
-            // btnEemalda
-            //
-            this.btnEemalda.Location = new System.Drawing.Point(440, 285);
-            this.btnEemalda.Name = "btnEemalda";
-            this.btnEemalda.Size = new System.Drawing.Size(120, 27);
-            this.btnEemalda.TabIndex = 5;
-            this.btnEemalda.Text = "Eemalda";
-            this.btnEemalda.UseVisualStyleBackColor = true;
-            this.btnEemalda.Click += new System.EventHandler(this.btnEemalda_Click);
-            //
+            listOstukorv.Name = "listOstukorv";
+            listOstukorv.Dock = DockStyle.Fill;
+            listOstukorv.HorizontalScrollbar = true;
+            listOstukorv.IntegralHeight = false;
+            listOstukorv.BackColor = Color.FromArgb(29, 35, 47);
+            listOstukorv.ForeColor = Color.FromArgb(235, 239, 247);
+            listOstukorv.BorderStyle = BorderStyle.FixedSingle;
+            listOstukorv.TabIndex = 1;
+
             // lblKokku
-            //
-            this.lblKokku.AutoSize = true;
-            this.lblKokku.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblKokku.Location = new System.Drawing.Point(20, 288);
-            this.lblKokku.Name = "lblKokku";
-            this.lblKokku.Size = new System.Drawing.Size(90, 21);
-            this.lblKokku.TabIndex = 6;
-            this.lblKokku.Text = "Kokku: 0 €";
-            //
+            lblKokku.Name = "lblKokku";
+            lblKokku.Text = "Kokku: 0 €";
+            lblKokku.AutoSize = true;
+            lblKokku.BackColor = Color.Transparent;
+            lblKokku.Font = new Font(
+                "Segoe UI", 12F, FontStyle.Bold);
+            lblKokku.Margin = new Padding(3, 14, 3, 3);
+
+            // nupud
+            nupud.Name = "nupud";
+            nupud.Dock = DockStyle.Fill;
+
+            // btnMiinus
+            btnMiinus.Name = "btnMiinus";
+            btnMiinus.Text = "−";
+            btnMiinus.Size = new Size(48, 38);
+            btnMiinus.BackColor = Color.FromArgb(29, 35, 47);
+            btnMiinus.ForeColor = Color.FromArgb(235, 239, 247);
+            btnMiinus.FlatStyle = FlatStyle.Flat;
+            btnMiinus.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnMiinus.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnMiinus.UseVisualStyleBackColor = false;
+            btnMiinus.Cursor = Cursors.Hand;
+            btnMiinus.TabIndex = 2;
+            btnMiinus.Click += btnMiinus_Click;
+
+            // btnPluss
+            btnPluss.Name = "btnPluss";
+            btnPluss.Text = "+";
+            btnPluss.Size = new Size(48, 38);
+            btnPluss.BackColor = Color.FromArgb(29, 35, 47);
+            btnPluss.ForeColor = Color.FromArgb(235, 239, 247);
+            btnPluss.FlatStyle = FlatStyle.Flat;
+            btnPluss.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnPluss.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnPluss.UseVisualStyleBackColor = false;
+            btnPluss.Cursor = Cursors.Hand;
+            btnPluss.TabIndex = 3;
+            btnPluss.Click += btnPluss_Click;
+
+            // btnEemalda
+            btnEemalda.Name = "btnEemalda";
+            btnEemalda.Text = "Eemalda rida";
+            btnEemalda.Size = new Size(145, 38);
+            btnEemalda.BackColor = Color.FromArgb(29, 35, 47);
+            btnEemalda.ForeColor = Color.Salmon;
+            btnEemalda.FlatStyle = FlatStyle.Flat;
+            btnEemalda.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnEemalda.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnEemalda.UseVisualStyleBackColor = false;
+            btnEemalda.Cursor = Cursors.Hand;
+            btnEemalda.TabIndex = 4;
+            btnEemalda.Click += btnEemalda_Click;
+
             // btnGenPDF
-            //
-            this.btnGenPDF.Location = new System.Drawing.Point(20, 335);
-            this.btnGenPDF.Name = "btnGenPDF";
-            this.btnGenPDF.Size = new System.Drawing.Size(150, 32);
-            this.btnGenPDF.TabIndex = 7;
-            this.btnGenPDF.Text = "Loo PDF";
-            this.btnGenPDF.UseVisualStyleBackColor = true;
-            this.btnGenPDF.Click += new System.EventHandler(this.btnGenPDF_Click);
-            //
+            btnGenPDF.Name = "btnGenPDF";
+            btnGenPDF.Text = "Loo PDF";
+            btnGenPDF.Size = new Size(150, 38);
+            btnGenPDF.BackColor = Color.FromArgb(77, 130, 245);
+            btnGenPDF.ForeColor = Color.FromArgb(235, 239, 247);
+            btnGenPDF.FlatStyle = FlatStyle.Flat;
+            btnGenPDF.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnGenPDF.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnGenPDF.UseVisualStyleBackColor = false;
+            btnGenPDF.Cursor = Cursors.Hand;
+            btnGenPDF.TabIndex = 5;
+            btnGenPDF.Click += btnGenPDF_Click;
+
+            // btnAvaPdf
+            btnAvaPdf.Name = "btnAvaPdf";
+            btnAvaPdf.Text = "Ava PDF";
+            btnAvaPdf.Size = new Size(140, 38);
+            btnAvaPdf.Enabled = false;
+            btnAvaPdf.BackColor = Color.FromArgb(29, 35, 47);
+            btnAvaPdf.ForeColor = Color.FromArgb(235, 239, 247);
+            btnAvaPdf.FlatStyle = FlatStyle.Flat;
+            btnAvaPdf.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnAvaPdf.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnAvaPdf.UseVisualStyleBackColor = false;
+            btnAvaPdf.Cursor = Cursors.Hand;
+            btnAvaPdf.TabIndex = 6;
+            btnAvaPdf.Click += btnAvaPdf_Click;
+
             // btnSaadaEmail
-            //
-            this.btnSaadaEmail.Location = new System.Drawing.Point(185, 335);
-            this.btnSaadaEmail.Name = "btnSaadaEmail";
-            this.btnSaadaEmail.Size = new System.Drawing.Size(150, 32);
-            this.btnSaadaEmail.TabIndex = 8;
-            this.btnSaadaEmail.Text = "Saada e-mailile";
-            this.btnSaadaEmail.UseVisualStyleBackColor = true;
-            this.btnSaadaEmail.Click += new System.EventHandler(this.btnSaadaEmail_Click);
-            //
+            btnSaadaEmail.Name = "btnSaadaEmail";
+            btnSaadaEmail.Text = "Saada e-postiga";
+            btnSaadaEmail.Size = new Size(155, 38);
+            btnSaadaEmail.BackColor = Color.FromArgb(29, 35, 47);
+            btnSaadaEmail.ForeColor = Color.FromArgb(235, 239, 247);
+            btnSaadaEmail.FlatStyle = FlatStyle.Flat;
+            btnSaadaEmail.FlatAppearance.BorderColor =
+                Color.FromArgb(52, 63, 82);
+            btnSaadaEmail.FlatAppearance.MouseOverBackColor =
+                Color.FromArgb(48, 65, 94);
+            btnSaadaEmail.UseVisualStyleBackColor = false;
+            btnSaadaEmail.Cursor = Cursors.Hand;
+            btnSaadaEmail.TabIndex = 7;
+            btnSaadaEmail.Click += btnSaadaEmail_Click;
+
+            valik.Controls.Add(lblToode);
+            valik.Controls.Add(btnLisaKorvi);
+
+            nupud.Controls.Add(btnMiinus);
+            nupud.Controls.Add(btnPluss);
+            nupud.Controls.Add(btnEemalda);
+            nupud.Controls.Add(btnGenPDF);
+            nupud.Controls.Add(btnAvaPdf);
+            nupud.Controls.Add(btnSaadaEmail);
+
+            paigutus.Controls.Add(lblPealkiri, 0, 0);
+            paigutus.Controls.Add(valik, 0, 1);
+            paigutus.Controls.Add(listOstukorv, 0, 2);
+            paigutus.Controls.Add(lblKokku, 0, 3);
+            paigutus.Controls.Add(nupud, 0, 4);
+
             // ArveForm
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 391);
-            this.Controls.Add(this.btnSaadaEmail);
-            this.Controls.Add(this.btnGenPDF);
-            this.Controls.Add(this.lblKokku);
-            this.Controls.Add(this.btnEemalda);
-            this.Controls.Add(this.listOstukorv);
-            this.Controls.Add(this.lblOstukorv);
-            this.Controls.Add(this.btnLisaKorvi);
-            this.Controls.Add(this.comboToode);
-            this.Controls.Add(this.lblToode);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ArveForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Arve";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Font = new Font("Segoe UI", 10F);
+            BackColor = Color.FromArgb(18, 22, 30);
+            ForeColor = Color.FromArgb(235, 239, 247);
+            ClientSize = new Size(950, 650);
+            MinimumSize = new Size(900, 580);
+            Controls.Add(paigutus);
+            FormBorderStyle = FormBorderStyle.Sizable;
+            MaximizeBox = true;
+            MinimizeBox = false;
+            StartPosition = FormStartPosition.CenterScreen;
+            Name = "ArveForm";
+            Text = "Ostukorv ja arve";
+            Load += ArveForm_Load;
+            FormClosing += ArveForm_FormClosing;
+
+            valik.ResumeLayout(false);
+            valik.PerformLayout();
+            nupud.ResumeLayout(false);
+            paigutus.ResumeLayout(false);
+            paigutus.PerformLayout();
+            ResumeLayout(false);
         }
 
-        #endregion
-
-        private System.Windows.Forms.Label lblToode;
-        private System.Windows.Forms.ComboBox comboToode;
-        private System.Windows.Forms.Button btnLisaKorvi;
-        private System.Windows.Forms.Label lblOstukorv;
-        private System.Windows.Forms.ListBox listOstukorv;
-        private System.Windows.Forms.Button btnEemalda;
-        private System.Windows.Forms.Label lblKokku;
-        private System.Windows.Forms.Button btnGenPDF;
-        private System.Windows.Forms.Button btnSaadaEmail;
-
+        private TableLayoutPanel paigutus;
+        private Label lblPealkiri;
+        private FlowLayoutPanel valik;
+        private Label lblToode;
+        private Button btnLisaKorvi;
+        private ListBox listOstukorv;
+        private Label lblKokku;
+        private FlowLayoutPanel nupud;
+        private Button btnMiinus;
+        private Button btnPluss;
+        private Button btnEemalda;
+        private Button btnGenPDF;
+        private Button btnAvaPdf;
+        private Button btnSaadaEmail;
     }
 }

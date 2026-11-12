@@ -20,114 +20,6 @@ public partial class Form2 : Form
     {
         InitializeComponent();
 
-        Controls.Clear();
-
-        Text = "Toodete haldus";
-        ClientSize = new Size(1180, 800);
-        MinimumSize = new Size(980, 700);
-
-        dataGridViewTooted.AllowUserToAddRows = false;
-        dataGridViewTooted.Dock = DockStyle.Fill;
-
-        dataGridViewTooted.AutoSizeColumnsMode =
-            DataGridViewAutoSizeColumnsMode.Fill;
-
-        comboKategooria.DropDownStyle =
-            ComboBoxStyle.DropDownList;
-
-        button1.Text = "Kategooriad";
-
-        var paigutus = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            ColumnCount = 2,
-            RowCount = 2,
-            Padding = new Padding(15)
-        };
-
-        paigutus.ColumnStyles.Add(
-            new ColumnStyle(SizeType.Percent, 100));
-
-        paigutus.ColumnStyles.Add(
-            new ColumnStyle(SizeType.Absolute, 330));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 60));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Percent, 100));
-
-        var pealkiri = Kujundus.Pealkiri(
-            "Toodete haldus");
-
-        paigutus.Controls.Add(pealkiri, 0, 0);
-        paigutus.SetColumnSpan(pealkiri, 2);
-
-        paigutus.Controls.Add(
-            dataGridViewTooted,
-            0,
-            1);
-
-        var valjad = Kujundus.Veerg();
-
-        valjad.Padding =
-            new Padding(15, 0, 5, 10);
-
-        Kujundus.LisaVali(
-            valjad,
-            "Toote nimetus",
-            txtNimetus);
-
-        Kujundus.LisaVali(
-            valjad,
-            "Kogus laos",
-            txtKogus);
-
-        Kujundus.LisaVali(
-            valjad,
-            "Hind (€)",
-            txtHind);
-
-        Kujundus.LisaVali(
-            valjad,
-            "Kategooria",
-            comboKategooria);
-
-        picturePilt.Size =
-            new Size(280, 170);
-
-        picturePilt.Margin =
-            new Padding(3, 15, 3, 8);
-
-        valjad.Controls.Add(picturePilt);
-
-        foreach (var nupp in new[]
-                 {
-                 btnValiPilt,
-                 btnLisa,
-                 btnUuenda,
-                 btnKustuta,
-                 button1
-             })
-        {
-            nupp.Size = new Size(280, 38);
-            nupp.Margin = new Padding(3, 3, 3, 5);
-
-            valjad.Controls.Add(nupp);
-        }
-
-        var arveNupp = Kujundus.Nupp(
-            "Lisa arvele",
-            btnArve_Click);
-
-        arveNupp.Width = 280;
-
-        valjad.Controls.Add(arveNupp);
-
-        paigutus.Controls.Add(valjad, 1, 1);
-
-        Controls.Add(paigutus);
-
         bool admin = AktiivneKasutaja.OnAdmin;
 
         btnLisa.Enabled = admin;
@@ -139,18 +31,18 @@ public partial class Form2 : Form
         txtNimetus.ReadOnly = !admin;
         txtKogus.ReadOnly = !admin;
         txtHind.ReadOnly = !admin;
-
         comboKategooria.Enabled = admin;
+    }
 
-        Kujundus.Rakenda(this);
-        Kujundus.Rohuta(btnLisa);
+    private void Form2_Load(object? sender, EventArgs e)
+    {
+        if (System.ComponentModel.LicenseManager.UsageMode ==
+            System.ComponentModel.LicenseUsageMode.Designtime)
+            return;
 
-        btnKustuta.ForeColor = Color.Salmon;
-
-        Load += (s, e) => Teosta(() =>
+        Teosta(() =>
         {
             Directory.CreateDirectory(Pildikaust);
-
             LaeKategooriad();
             LaeTooted();
             PuhastaValjad();
@@ -187,12 +79,9 @@ public partial class Form2 : Form
         using var db = new ToodedContext();
 
         comboKategooria.DataSource = null;
-
         comboKategooria.DisplayMember =
             nameof(Kategooria.Kategooria_nimetus);
-
-        comboKategooria.ValueMember =
-            nameof(Kategooria.Id);
+        comboKategooria.ValueMember = nameof(Kategooria.Id);
 
         comboKategooria.DataSource = db.Kategooriatabel
             .AsNoTracking()
@@ -214,72 +103,51 @@ public partial class Form2 : Form
                 t.Kogus,
                 t.Hind,
                 t.KategooriaId,
-                Kategooria =
-                    t.Kategooria.Kategooria_nimetus,
+                Kategooria = t.Kategooria.Kategooria_nimetus,
                 t.Pilt
             })
             .ToList();
 
-        dataGridViewTooted
-            .Columns["KategooriaId"]
-            .Visible = false;
+        dataGridViewTooted.Columns["KategooriaId"].Visible = false;
     }
 
     private void dataGridViewTooted_CellClick(
-        object sender,
-        DataGridViewCellEventArgs e)
+        object sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex < 0)
             return;
 
         Teosta(() =>
         {
-            var rida =
-                dataGridViewTooted.Rows[e.RowIndex];
+            var rida = dataGridViewTooted.Rows[e.RowIndex];
 
-            valitudId = Convert.ToInt32(
-                rida.Cells["Id"].Value);
+            valitudId = Convert.ToInt32(rida.Cells["Id"].Value);
 
             txtNimetus.Text =
-                rida.Cells["Toodenimetus"]
-                    .Value?.ToString() ?? "";
+                rida.Cells["Toodenimetus"].Value?.ToString() ?? "";
 
             txtKogus.Text =
-                rida.Cells["Kogus"]
-                    .Value?.ToString() ?? "";
+                rida.Cells["Kogus"].Value?.ToString() ?? "";
 
             txtHind.Text =
-                rida.Cells["Hind"]
-                    .Value?.ToString() ?? "";
+                rida.Cells["Hind"].Value?.ToString() ?? "";
 
-            // Taastab valitud toote tegeliku kategooria.
             comboKategooria.SelectedValue =
-                Convert.ToInt32(
-                    rida.Cells["KategooriaId"].Value);
+                Convert.ToInt32(rida.Cells["KategooriaId"].Value);
 
             valitudPilt = null;
 
             string nimi = Path.GetFileName(
                 rida.Cells["Pilt"].Value?.ToString() ?? "");
 
-            string tee = Path.Combine(
-                Pildikaust,
-                nimi);
+            string tee = Path.Combine(Pildikaust, nimi);
 
             if (!File.Exists(tee))
-            {
                 tee = Path.Combine(
-                    AppContext.BaseDirectory,
-                    "Images",
-                    nimi);
-            }
+                    AppContext.BaseDirectory, "Images", nimi);
 
             if (!File.Exists(tee))
-            {
-                tee = Path.Combine(
-                    "Images",
-                    nimi);
-            }
+                tee = Path.Combine("Images", nimi);
 
             AsendaPilt(null);
 
@@ -292,9 +160,7 @@ public partial class Form2 : Form
     }
 
     private bool LoeAndmed(
-        out int kogus,
-        out float hind,
-        out int kategooriaId)
+        out int kogus, out float hind, out int kategooriaId)
     {
         kogus = 0;
         hind = 0;
@@ -302,18 +168,14 @@ public partial class Form2 : Form
 
         if (string.IsNullOrWhiteSpace(txtNimetus.Text))
         {
-            MessageBox.Show(
-                "Sisesta toote nimetus!");
-
+            MessageBox.Show("Sisesta toote nimetus!");
             return false;
         }
 
-        if (!int.TryParse(txtKogus.Text, out kogus) ||
-            kogus < -1)
+        if (!int.TryParse(txtKogus.Text, out kogus) || kogus < -1)
         {
             MessageBox.Show(
                 "Sisesta korrektne mittenegatiivne kogus!");
-
             return false;
         }
 
@@ -328,15 +190,12 @@ public partial class Form2 : Form
         {
             MessageBox.Show(
                 "Sisesta korrektne hind vahemikus 0 kuni 100000000!");
-
             return false;
         }
 
         if (comboKategooria.SelectedValue is not int id)
         {
-            MessageBox.Show(
-                "Vali kategooria!");
-
+            MessageBox.Show("Vali kategooria!");
             return false;
         }
 
@@ -344,9 +203,7 @@ public partial class Form2 : Form
         return true;
     }
 
-    private void btnValiPilt_Click(
-        object sender,
-        EventArgs e)
+    private void btnValiPilt_Click(object sender, EventArgs e)
     {
         if (!KontrolliAdmini())
             return;
@@ -363,25 +220,19 @@ public partial class Form2 : Form
 
         Teosta(() =>
         {
-            using var pilt =
-                Image.FromFile(valija.FileName);
+            using var pilt = Image.FromFile(valija.FileName);
 
             AsendaPilt(new Bitmap(pilt));
-
             valitudPilt = valija.FileName;
         });
     }
 
-    private void btnLisa_Click(
-        object sender,
-        EventArgs e)
+    private void btnLisa_Click(object sender, EventArgs e)
     {
         Salvesta(false);
     }
 
-    private void btnUuenda_Click(
-        object sender,
-        EventArgs e)
+    private void btnUuenda_Click(object sender, EventArgs e)
     {
         Salvesta(true);
     }
@@ -393,9 +244,7 @@ public partial class Form2 : Form
 
         if (uuenda && valitudId == null)
         {
-            MessageBox.Show(
-                "Vali kõigepealt toode!");
-
+            MessageBox.Show("Vali kõigepealt toode!");
             return;
         }
 
@@ -403,34 +252,24 @@ public partial class Form2 : Form
                 out int kogus,
                 out float hind,
                 out int kategooriaId))
-        {
             return;
-        }
 
         Teosta(() =>
         {
             using var db = new ToodedContext();
 
-            if (!db.Kategooriatabel.Any(
-                    k => k.Id == kategooriaId))
-            {
+            if (!db.Kategooriatabel.Any(k => k.Id == kategooriaId))
                 throw new InvalidOperationException(
                     "Kategooriat enam ei ole.");
-            }
 
             var toode = uuenda
                 ? db.Toodetabel.Find(valitudId!.Value)
                 : new Toode();
 
             if (toode == null)
-            {
-                throw new InvalidOperationException(
-                    "Toodet ei leitud!");
-            }
+                throw new InvalidOperationException("Toodet ei leitud!");
 
-            toode.Toodenimetus =
-                txtNimetus.Text.Trim();
-
+            toode.Toodenimetus = txtNimetus.Text.Trim();
             toode.Kogus = kogus;
             toode.Hind = hind;
             toode.KategooriaId = kategooriaId;
@@ -441,16 +280,12 @@ public partial class Form2 : Form
             {
                 Directory.CreateDirectory(Pildikaust);
 
-                uusPilt =
-                    Guid.NewGuid().ToString("N")
-                    + Path.GetExtension(valitudPilt)
-                        .ToLowerInvariant();
+                uusPilt = Guid.NewGuid().ToString("N")
+                    + Path.GetExtension(valitudPilt).ToLowerInvariant();
 
                 File.Copy(
                     valitudPilt,
-                    Path.Combine(
-                        Pildikaust,
-                        uusPilt));
+                    Path.Combine(Pildikaust, uusPilt));
 
                 toode.Pilt = uusPilt;
             }
@@ -469,12 +304,7 @@ public partial class Form2 : Form
             catch
             {
                 if (uusPilt != null)
-                {
-                    File.Delete(
-                        Path.Combine(
-                            Pildikaust,
-                            uusPilt));
-                }
+                    File.Delete(Path.Combine(Pildikaust, uusPilt));
 
                 throw;
             }
@@ -484,42 +314,31 @@ public partial class Form2 : Form
         });
     }
 
-    private void btnKustuta_Click(
-        object sender,
-        EventArgs e)
+    private void btnKustuta_Click(object sender, EventArgs e)
     {
         if (!KontrolliAdmini())
             return;
 
         if (valitudId == null)
         {
-            MessageBox.Show(
-                "Vali kõigepealt toode!");
-
+            MessageBox.Show("Vali kõigepealt toode!");
             return;
         }
 
         if (MessageBox.Show(
                 "Kas kustutada valitud toode?",
                 "Kinnitus",
-                MessageBoxButtons.YesNo)
-            != DialogResult.Yes)
-        {
+                MessageBoxButtons.YesNo) != DialogResult.Yes)
             return;
-        }
 
         Teosta(() =>
         {
             using var db = new ToodedContext();
 
-            var toode = db.Toodetabel.Find(
-                valitudId.Value);
+            var toode = db.Toodetabel.Find(valitudId.Value);
 
             if (toode == null)
-            {
-                throw new InvalidOperationException(
-                    "Toodet ei leitud!");
-            }
+                throw new InvalidOperationException("Toodet ei leitud!");
 
             db.Toodetabel.Remove(toode);
             db.SaveChanges();
@@ -540,7 +359,6 @@ public partial class Form2 : Form
         txtHind.Clear();
 
         comboKategooria.SelectedIndex = -1;
-
         dataGridViewTooted.ClearSelection();
 
         AsendaPilt(null);
@@ -549,16 +367,11 @@ public partial class Form2 : Form
     private void AsendaPilt(Image? pilt)
     {
         var eelmine = picturePilt.Image;
-
         picturePilt.Image = pilt;
-
         eelmine?.Dispose();
     }
 
-    // Kategooriate haldus avaneb olemasoleva nupu kaudu.
-    private void button1_Click(
-        object sender,
-        EventArgs e)
+    private void button1_Click(object sender, EventArgs e)
     {
         if (!KontrolliAdmini())
             return;
@@ -569,10 +382,8 @@ public partial class Form2 : Form
             {
                 Text = "Kategooriate haldus",
                 ClientSize = new Size(640, 350),
-                StartPosition =
-                    FormStartPosition.CenterParent,
-                FormBorderStyle =
-                    FormBorderStyle.FixedDialog,
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false
             };
 
@@ -580,8 +391,7 @@ public partial class Form2 : Form
             {
                 Location = new Point(15, 15),
                 Size = new Size(230, 315),
-                DisplayMember =
-                    nameof(Kategooria.Kategooria_nimetus)
+                DisplayMember = nameof(Kategooria.Kategooria_nimetus)
             };
 
             var nimi = new TextBox
@@ -599,23 +409,23 @@ public partial class Form2 : Form
 
             aken.Controls.AddRange(new Control[]
             {
-                loend,
-                nimi,
-                kirjeldus,
+            loend,
+            nimi,
+            kirjeldus,
 
-                new Label
-                {
-                    Text = "Kategooria nimi:",
-                    AutoSize = true,
-                    Location = new Point(265, 20)
-                },
+            new Label
+            {
+                Text = "Kategooria nimi:",
+                AutoSize = true,
+                Location = new Point(265, 20)
+            },
 
-                new Label
-                {
-                    Text = "Kirjeldus:",
-                    AutoSize = true,
-                    Location = new Point(265, 85)
-                }
+            new Label
+            {
+                Text = "Kirjeldus:",
+                AutoSize = true,
+                Location = new Point(265, 85)
+            }
             });
 
             void Lae()
@@ -628,7 +438,6 @@ public partial class Form2 : Form
                     .ToList();
 
                 loend.SelectedIndex = -1;
-
                 nimi.Clear();
                 kirjeldus.Clear();
             }
@@ -655,8 +464,7 @@ public partial class Form2 : Form
                         "Sisesta kategooria nimi!");
                 }
 
-                var valitud =
-                    loend.SelectedItem as Kategooria;
+                var valitud = loend.SelectedItem as Kategooria;
 
                 if (uuenda && valitud == null)
                 {
@@ -666,13 +474,11 @@ public partial class Form2 : Form
 
                 using var db = new ToodedContext();
 
-                int id = uuenda
-                    ? valitud!.Id
-                    : 0;
+                int id = uuenda ? valitud!.Id : 0;
 
                 bool olemas = db.Kategooriatabel.Any(
-                    k => k.Kategooria_nimetus == nimetus
-                         && k.Id != id);
+                    k => k.Kategooria_nimetus == nimetus &&
+                         k.Id != id);
 
                 if (olemas)
                 {
@@ -697,14 +503,10 @@ public partial class Form2 : Form
                     db.Kategooriatabel.Add(kat);
 
                 db.SaveChanges();
-
                 Lae();
             }
 
-            void LisaNupp(
-                string tekst,
-                int x,
-                Action tegevus)
+            void LisaNupp(string tekst, int x, Action tegevus)
             {
                 var nupp = new Button
                 {
@@ -713,8 +515,7 @@ public partial class Form2 : Form
                     Size = new Size(105, 35)
                 };
 
-                nupp.Click += (s, args) =>
-                    Teosta(tegevus);
+                nupp.Click += (s, args) => Teosta(tegevus);
 
                 aken.Controls.Add(nupp);
             }
@@ -743,7 +544,7 @@ public partial class Form2 : Form
                 using var db = new ToodedContext();
 
                 if (db.Toodetabel.Any(
-                        t => t.KategooriaId == valitud.Id))
+                    t => t.KategooriaId == valitud.Id))
                 {
                     throw new InvalidOperationException(
                         "Kategoorias on tooteid. " +
@@ -753,14 +554,12 @@ public partial class Form2 : Form
                 if (MessageBox.Show(
                         "Kas kustutada kategooria?",
                         "Kinnitus",
-                        MessageBoxButtons.YesNo)
-                    != DialogResult.Yes)
+                        MessageBoxButtons.YesNo) != DialogResult.Yes)
                 {
                     return;
                 }
 
-                var kat = db.Kategooriatabel.Find(
-                    valitud.Id);
+                var kat = db.Kategooriatabel.Find(valitud.Id);
 
                 if (kat != null)
                 {
@@ -773,27 +572,24 @@ public partial class Form2 : Form
 
             Lae();
 
-            aken.ShowDialog(this);
             Kujundus.Rakenda(aken);
+            aken.ShowDialog(this);
+
             LaeKategooriad();
             LaeTooted();
             PuhastaValjad();
         });
     }
 
-    private void btnArve_Click(
-        object sender,
-        EventArgs e)
+    private void btnArve_Click(object sender, EventArgs e)
     {
         Teosta(() =>
         {
             using var db = new ToodedContext();
 
             var toode = valitudId.HasValue
-                ? db.Toodetabel
-                    .AsNoTracking()
-                    .FirstOrDefault(
-                        t => t.Id == valitudId.Value)
+                ? db.Toodetabel.AsNoTracking()
+                    .FirstOrDefault(t => t.Id == valitudId.Value)
                 : null;
 
             using var arve = new ArveForm
@@ -805,11 +601,9 @@ public partial class Form2 : Form
         });
     }
 
-    protected override void OnFormClosed(
-        FormClosedEventArgs e)
+    protected override void OnFormClosed(FormClosedEventArgs e)
     {
         AsendaPilt(null);
-
         base.OnFormClosed(e);
     }
 }

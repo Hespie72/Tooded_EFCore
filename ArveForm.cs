@@ -13,30 +13,11 @@ public partial class ArveForm : Form
     private const string SaatjaEmail =
         "vitalya.abdulov.1979@gmail.com";
 
-    private const string GmailiRakenduseParool =
-        "iccp iixp npok vsnp";
+    private static string GmailiRakenduseParool =>
+        Environment.GetEnvironmentVariable(
+            "TOODED_GMAIL_APP_PASSWORD") ?? "";
 
-    private readonly Button btnPluss = new()
-    {
-        Text = "+",
-        Size = new Size(48, 38)
-    };
-
-    private readonly Button btnMiinus = new()
-    {
-        Text = "−",
-        Size = new Size(48, 38)
-    };
-
-    private readonly Button btnAvaPdf = new()
-    {
-        Text = "Ava PDF",
-        Size = new Size(140, 38)
-    };
-
-    private static readonly List<OstukorviRida>
-        ostukorv = new();
-
+    private static readonly List<OstukorviRida> ostukorv = new();
     private static long korviVersioon;
 
     private string? viimanePdf;
@@ -48,146 +29,41 @@ public partial class ArveForm : Form
     public ArveForm()
     {
         InitializeComponent();
+    }
 
-        Controls.Clear();
+    private void btnPluss_Click(object? sender, EventArgs e)
+    {
+        MuudaKogust(1);
+    }
 
-        Text = "Ostukorv ja arve";
-        ClientSize = new Size(950, 650);
-        MinimumSize = new Size(900, 580);
+    private void btnMiinus_Click(object? sender, EventArgs e)
+    {
+        MuudaKogust(-1);
+    }
 
-        FormBorderStyle = FormBorderStyle.Sizable;
-        MaximizeBox = true;
-
-        var paigutus = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            ColumnCount = 1,
-            RowCount = 5,
-            Padding = new Padding(20)
-        };
-
-        paigutus.ColumnStyles.Add(
-            new ColumnStyle(SizeType.Percent, 100));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 60));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 75));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Percent, 100));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 50));
-
-        paigutus.RowStyles.Add(
-            new RowStyle(SizeType.Absolute, 65));
-
-        paigutus.Controls.Add(
-            Kujundus.Pealkiri("Ostukorv ja arve"),
-            0,
-            0);
-
-        var valik = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill
-        };
-
-        lblToode.Text =
-    "Lisa tooteid poes toote kõrval oleva + nupuga.";
-
-        lblToode.AutoSize = true;
-        lblToode.Margin = new Padding(3, 10, 10, 3);
-
-        btnLisaKorvi.Text = "Ava pood";
-        btnLisaKorvi.Size = new Size(150, 38);
-
-        valik.Controls.AddRange(new Control[]
-        {
-    lblToode,
-    btnLisaKorvi
-        });
-
-        paigutus.Controls.Add(valik, 0, 1);
-
-        listOstukorv.Dock = DockStyle.Fill;
-        listOstukorv.HorizontalScrollbar = true;
-        listOstukorv.IntegralHeight = false;
-
-        paigutus.Controls.Add(listOstukorv, 0, 2);
-
-        lblKokku.Margin = new Padding(3, 14, 3, 3);
-
-        paigutus.Controls.Add(lblKokku, 0, 3);
-
-        var nupud = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill
-        };
-
-        btnEemalda.Size = new Size(145, 38);
-        btnGenPDF.Size = new Size(150, 38);
-        btnSaadaEmail.Size = new Size(155, 38);
-
-        btnEemalda.Text = "Eemalda rida";
-        btnGenPDF.Text = "Loo PDF";
-        btnSaadaEmail.Text = "Saada e-postiga";
-
-        nupud.Controls.AddRange(new Control[]
-        {
-            btnMiinus,
-            btnPluss,
-            btnEemalda,
-            btnGenPDF,
-            btnAvaPdf,
-            btnSaadaEmail
-        });
-
-        paigutus.Controls.Add(nupud, 0, 4);
-
-        Controls.Add(paigutus);
-
-        btnPluss.Click +=
-            (s, e) => MuudaKogust(1);
-
-        btnMiinus.Click +=
-            (s, e) => MuudaKogust(-1);
-
-        btnAvaPdf.Click += (s, e) => Teosta(() =>
+    private void btnAvaPdf_Click(object? sender, EventArgs e)
+    {
+        Teosta(() =>
         {
             if (!PdfKehtib())
-            {
                 throw new InvalidOperationException(
                     "Loo esmalt praeguse ostukorvi PDF!");
-            }
 
-            Process.Start(new ProcessStartInfo(
-                viimanePdf!)
+            Process.Start(new ProcessStartInfo(viimanePdf!)
             {
                 UseShellExecute = true
             });
         });
+    }
 
-        Kujundus.Rakenda(this);
-        Kujundus.Rohuta(btnLisaKorvi);
-        Kujundus.Rohuta(btnGenPDF);
+    private void ArveForm_FormClosing(
+        object? sender, FormClosingEventArgs e)
+    {
+        if (!saatmine)
+            return;
 
-        btnEemalda.ForeColor = Color.Salmon;
-        btnAvaPdf.Enabled = false;
-
-        Load += ArveForm_Load;
-
-        FormClosing += (s, e) =>
-        {
-            if (!saatmine)
-                return;
-
-            e.Cancel = true;
-
-            MessageBox.Show(
-                "Oota e-kirja saatmise lõppu.");
-        };
+        e.Cancel = true;
+        MessageBox.Show("Oota e-kirja saatmise lõppu.");
     }
 
     private bool PdfKehtib()
@@ -203,18 +79,14 @@ public partial class ArveForm : Form
 
         if (indeks < 0)
         {
-            MessageBox.Show(
-                "Vali ostukorvist rida!");
-
+            MessageBox.Show("Vali ostukorvist rida!");
             return;
         }
 
         Teosta(() =>
         {
             var rida = ostukorv[indeks];
-
-            long uusKogus =
-                (long)rida.Kogus + muutus;
+            long uusKogus = (long)rida.Kogus + muutus;
 
             if (muutus > 0)
             {
@@ -222,8 +94,7 @@ public partial class ArveForm : Form
 
                 var toode = db.Toodetabel
                     .AsNoTracking()
-                    .FirstOrDefault(
-                        t => t.Id == rida.Toode.Id)
+                    .FirstOrDefault(t => t.Id == rida.Toode.Id)
                     ?? throw new InvalidOperationException(
                         "Toodet enam ei ole.");
 
@@ -240,24 +111,17 @@ public partial class ArveForm : Form
             }
 
             if (uusKogus <= 0)
-            {
                 ostukorv.RemoveAt(indeks);
-            }
             else
-            {
                 rida.Kogus = (int)uusKogus;
-            }
 
             korviVersioon++;
-
             UuendaKorv();
 
             if (ostukorv.Count > 0)
             {
                 listOstukorv.SelectedIndex =
-                    Math.Min(
-                        indeks,
-                        ostukorv.Count - 1);
+                    Math.Min(indeks, ostukorv.Count - 1);
             }
         });
     }
@@ -277,16 +141,17 @@ public partial class ArveForm : Form
         catch (Exception viga)
         {
             MessageBox.Show(
-                "Toiming ebaõnnestus:\n" +
-                viga.Message,
+                "Toiming ebaõnnestus:\n" + viga.Message,
                 "Viga");
         }
     }
 
-    private void ArveForm_Load(
-    object? sender,
-    EventArgs e)
+    private void ArveForm_Load(object? sender, EventArgs e)
     {
+        if (System.ComponentModel.LicenseManager.UsageMode ==
+            System.ComponentModel.LicenseUsageMode.Designtime)
+            return;
+
         Teosta(() =>
         {
             if (SelectedToode != null)
@@ -299,31 +164,23 @@ public partial class ArveForm : Form
         });
     }
 
-    private void btnLisaKorvi_Click(
-    object sender,
-    EventArgs e)
+    private void btnLisaKorvi_Click(object sender, EventArgs e)
     {
         Teosta(() =>
         {
             using var pood = new Form3();
             pood.ShowDialog(this);
-
             UuendaKorv();
         });
     }
 
-    private void btnEemalda_Click(
-        object sender,
-        EventArgs e)
+    private void btnEemalda_Click(object sender, EventArgs e)
     {
         if (listOstukorv.SelectedIndex < 0)
             return;
 
-        ostukorv.RemoveAt(
-            listOstukorv.SelectedIndex);
-
+        ostukorv.RemoveAt(listOstukorv.SelectedIndex);
         korviVersioon++;
-
         UuendaKorv();
     }
 
@@ -332,37 +189,28 @@ public partial class ArveForm : Form
         listOstukorv.Items.Clear();
 
         foreach (var rida in ostukorv)
-        {
             listOstukorv.Items.Add(rida);
-        }
 
         lblKokku.Text =
             $"Kokku: {ostukorv.Sum(r => r.Summa):0.00} €";
 
         if (pdfVersioon != korviVersioon)
-        {
             viimanePdf = null;
-        }
 
         btnAvaPdf.Enabled = PdfKehtib();
     }
 
-    private void btnGenPDF_Click(
-        object sender,
-        EventArgs e)
+    private void btnGenPDF_Click(object sender, EventArgs e)
     {
         Teosta(() =>
         {
             if (ostukorv.Count == 0)
-            {
                 throw new InvalidOperationException(
                     "Ostukorv on tühi!");
-            }
 
 #if DEBUG
             string kaust = Path.Combine(
-                AppContext.BaseDirectory,
-                "Arved");
+                AppContext.BaseDirectory, "Arved");
 #else
             string kaust = Path.Combine(
                 Environment.GetFolderPath(
@@ -382,7 +230,6 @@ public partial class ArveForm : Form
 
             viimanePdf = fail;
             pdfVersioon = korviVersioon;
-
             btnAvaPdf.Enabled = true;
 
             MessageBox.Show(
@@ -400,16 +247,14 @@ public partial class ArveForm : Form
         var rida = new StringBuilder();
 
         foreach (char taht in tekst
-                     .Replace('\r', ' ')
-                     .Replace('\n', ' '))
+            .Replace('\r', ' ')
+            .Replace('\n', ' '))
         {
             if (rida.Length > 0 &&
                 joonis.MeasureString(
-                    rida.ToString() + taht,
-                    font).Width > laius)
+                    rida.ToString() + taht, font).Width > laius)
             {
                 yield return rida.ToString();
-
                 rida.Clear();
             }
 
@@ -417,9 +262,7 @@ public partial class ArveForm : Form
         }
 
         if (rida.Length > 0)
-        {
             yield return rida.ToString();
-        }
     }
 
     private static void LooPdf(string fail)
@@ -429,7 +272,6 @@ public partial class ArveForm : Form
         dokument.Info.Title = "Arve";
 
         var font = new XFont("Verdana", 11);
-
         XGraphics? joonis = null;
 
         double y = 0;
@@ -444,7 +286,6 @@ public partial class ArveForm : Form
 
             laius = leht.Width.Point;
             korgus = leht.Height.Point;
-
             joonis = XGraphics.FromPdfPage(leht);
 
             joonis.DrawString(
@@ -471,15 +312,10 @@ public partial class ArveForm : Form
             foreach (var rida in ostukorv)
             {
                 foreach (string tekst in JagaRead(
-                             rida.ToString(),
-                             joonis!,
-                             font,
-                             laius - 70))
+                    rida.ToString(), joonis!, font, laius - 70))
                 {
                     if (y + 20 > korgus - 50)
-                    {
                         UusLeht();
-                    }
 
                     joonis!.DrawString(
                         tekst,
@@ -495,9 +331,7 @@ public partial class ArveForm : Form
             }
 
             if (y + 50 > korgus - 50)
-            {
                 UusLeht();
-            }
 
             joonis!.DrawString(
                 $"Kokku: {ostukorv.Sum(r => r.Summa):0.00} €",
@@ -515,22 +349,18 @@ public partial class ArveForm : Form
     }
 
     private async void btnSaadaEmail_Click(
-        object sender,
-        EventArgs e)
+        object sender, EventArgs e)
     {
         if (saatmine)
             return;
 
         if (!PdfKehtib())
         {
-            MessageBox.Show(
-                "Loo esmalt praeguse ostukorvi PDF!");
-
+            MessageBox.Show("Loo esmalt praeguse ostukorvi PDF!");
             return;
         }
 
-        string parool =
-            GmailiRakenduseParool.Replace(" ", "");
+        string parool = GmailiRakenduseParool.Replace(" ", "");
 
         if (string.IsNullOrWhiteSpace(parool) ||
             string.Equals(
@@ -538,38 +368,28 @@ public partial class ArveForm : Form
                 "SIIA_RAKENDUSE_PAROOL",
                 StringComparison.Ordinal))
         {
-            MessageBox.Show(
-                "E-posti saatmine pole seadistatud.");
-
+            MessageBox.Show("E-posti saatmine pole seadistatud.");
             return;
         }
 
-        string saaja =
-            Microsoft.VisualBasic.Interaction.InputBox(
-                "Sisesta saaja e-posti aadress",
-                "Arve saatmine",
-                "");
+        string saaja = Microsoft.VisualBasic.Interaction.InputBox(
+            "Sisesta saaja e-posti aadress",
+            "Arve saatmine",
+            "");
 
         if (string.IsNullOrWhiteSpace(saaja))
             return;
 
         try
         {
-            var aadress = new MailAddress(
-                saaja.Trim());
-
+            var aadress = new MailAddress(saaja.Trim());
             saatmine = true;
 
             foreach (var nupp in new[]
-                     {
-                         btnLisaKorvi,
-                         btnEemalda,
-                         btnPluss,
-                         btnMiinus,
-                         btnGenPDF,
-                         btnAvaPdf,
-                         btnSaadaEmail
-                     })
+            {
+                btnLisaKorvi, btnEemalda, btnPluss, btnMiinus,
+                btnGenPDF, btnAvaPdf, btnSaadaEmail
+            })
             {
                 nupp.Enabled = false;
             }
@@ -582,40 +402,27 @@ public partial class ArveForm : Form
             };
 
             kiri.To.Add(aadress);
+            kiri.Attachments.Add(new Attachment(viimanePdf!));
 
-            kiri.Attachments.Add(
-                new Attachment(viimanePdf!));
-
-            using var smtp = new SmtpClient(
-                "smtp.gmail.com",
-                587)
+            using var smtp = new SmtpClient("smtp.gmail.com", 587)
             {
                 UseDefaultCredentials = false,
-
                 Credentials = new NetworkCredential(
-                    SaatjaEmail,
-                    parool),
-
+                    SaatjaEmail, parool),
                 EnableSsl = true
             };
 
-            using var katkestus =
-                new CancellationTokenSource(
-                    TimeSpan.FromSeconds(60));
+            using var katkestus = new CancellationTokenSource(
+                TimeSpan.FromSeconds(60));
 
-            await smtp.SendMailAsync(
-                kiri,
-                katkestus.Token);
+            await smtp.SendMailAsync(kiri, katkestus.Token);
 
-            MessageBox.Show(
-                "Arve on saadetud!",
-                "E-post");
+            MessageBox.Show("Arve on saadetud!", "E-post");
         }
         catch (Exception viga)
         {
             MessageBox.Show(
-                "Saatmine ebaõnnestus:\n" +
-                viga.Message,
+                "Saatmine ebaõnnestus:\n" + viga.Message,
                 "Viga");
         }
         finally
@@ -623,14 +430,10 @@ public partial class ArveForm : Form
             saatmine = false;
 
             foreach (var nupp in new[]
-                     {
-                         btnLisaKorvi,
-                         btnEemalda,
-                         btnPluss,
-                         btnMiinus,
-                         btnGenPDF,
-                         btnSaadaEmail
-                     })
+            {
+                btnLisaKorvi, btnEemalda, btnPluss,
+                btnMiinus, btnGenPDF, btnSaadaEmail
+            })
             {
                 nupp.Enabled = true;
             }
@@ -638,6 +441,7 @@ public partial class ArveForm : Form
             btnAvaPdf.Enabled = PdfKehtib();
         }
     }
+
     public static void LisaKorvi(int tooteId)
     {
         using var db = new ToodedContext();
@@ -648,9 +452,9 @@ public partial class ArveForm : Form
             ?? throw new InvalidOperationException(
                 "Toodet ei leitud!");
 
-        if (!float.IsFinite(toode.Hind) ||
-            toode.Hind < 0 ||
-            toode.Hind > 100000000)
+        if (!float.IsFinite(toode.Hind)
+            || toode.Hind < 0
+            || toode.Hind > 100000000)
         {
             throw new InvalidOperationException(
                 "Toote hind on vigane.");
