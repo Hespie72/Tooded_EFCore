@@ -6,11 +6,9 @@ public class OstukorviRida
 
     public int Kogus { get; set; }
 
-    // Andmebaasi hinnatüüp säilib.
-    // Rahasumma arvutatakse decimal-tüübiga.
     public decimal Summa =>
         Math.Round(
-            (decimal)Toode.Hind * Kogus,
+            Toode.Hind * Kogus,
             2);
 
     public override string ToString()

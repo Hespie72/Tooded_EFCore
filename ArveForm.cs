@@ -452,8 +452,7 @@ public partial class ArveForm : Form
             ?? throw new InvalidOperationException(
                 "Toodet ei leitud!");
 
-        if (!float.IsFinite(toode.Hind)
-            || toode.Hind < 0
+        if (toode.Hind < 0
             || toode.Hind > 100000000)
         {
             throw new InvalidOperationException(

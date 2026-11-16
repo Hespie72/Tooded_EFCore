@@ -24,6 +24,9 @@ namespace Tooded_EFCore
         {
             modelBuilder.Entity<Kategooria>().ToTable("Kategooriatabel");
             modelBuilder.Entity<Toode>().ToTable("Toodetabel");
+            modelBuilder.Entity<Toode>()
+                .Property(t => t.Hind)
+                .HasPrecision(18, 2);
         }
     }
 }

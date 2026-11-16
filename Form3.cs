@@ -430,9 +430,9 @@ public partial class Form3 : Form
                             otsing,
                             StringComparison.CurrentCultureIgnoreCase)
                         && (!alates.HasValue ||
-                            t.Hind >= (float)alates.Value)
+                            t.Hind >= alates.Value)
                         && (!kuni.HasValue ||
-                            t.Hind <= (float)kuni.Value)
+                            t.Hind <= kuni.Value)
                         && (!chkLaos.Checked || t.Kogus > 0))
                     .ToList();
 

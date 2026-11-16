@@ -160,7 +160,7 @@ public partial class Form2 : Form
     }
 
     private bool LoeAndmed(
-        out int kogus, out float hind, out int kategooriaId)
+        out int kogus, out decimal hind, out int kategooriaId)
     {
         kogus = 0;
         hind = 0;
@@ -179,17 +179,25 @@ public partial class Form2 : Form
             return false;
         }
 
-        if (!float.TryParse(
+        if (!decimal.TryParse(
                 txtHind.Text,
-                NumberStyles.Float,
+                NumberStyles.AllowLeadingWhite |
+                NumberStyles.AllowTrailingWhite |
+                NumberStyles.AllowLeadingSign |
+                NumberStyles.AllowDecimalPoint,
                 CultureInfo.CurrentCulture,
                 out hind)
-            || !float.IsFinite(hind)
             || hind < 0
             || hind > 100000000)
         {
             MessageBox.Show(
                 "Sisesta korrektne hind vahemikus 0 kuni 100000000!");
+            return false;
+        }
+
+        if (decimal.Round(hind, 2) != hind)
+        {
+            MessageBox.Show("Hinnal võib olla kuni kaks kohta pärast koma!");
             return false;
         }
 
@@ -250,7 +258,7 @@ public partial class Form2 : Form
 
         if (!LoeAndmed(
                 out int kogus,
-                out float hind,
+                out decimal hind,
                 out int kategooriaId))
             return;
 

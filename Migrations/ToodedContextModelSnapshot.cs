@@ -79,8 +79,9 @@ namespace Tooded_EFCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("Hind")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Hind")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("KategooriaId")
                         .HasColumnType("int");
