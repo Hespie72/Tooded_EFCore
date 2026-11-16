@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Tooded_EFCore;
@@ -7,18 +8,242 @@ public partial class Form3 : Form
 {
     private readonly List<Image> pildid = new();
     private List<Kategooria> kategooriad = new();
+
     private bool andmedLaetud;
+    private bool languageChanging;
+
+    private ComboBox languageSelector = null!;
+
+    private static readonly string LanguageFile = Path.Combine(
+        Environment.GetFolderPath(
+            Environment.SpecialFolder.LocalApplicationData),
+        "Tooded_EFCore",
+        "language.txt");
+
+    private bool IsEnglish =>
+        CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en";
 
     public Form3()
     {
         InitializeComponent();
-        comboJarjestus.SelectedIndex = 0;
+
+        if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            return;
+
+        InitializeLanguage();
+    }
+
+    private string T(string key, string estonian, string english)
+    {
+        var resources =
+            new ComponentResourceManager(typeof(Form3));
+
+        string? value = resources.GetString(
+            key, CultureInfo.CurrentUICulture);
+
+        if (IsEnglish)
+        {
+            var englishResources = resources.GetResourceSet(
+                CultureInfo.GetCultureInfo("en"),
+                true,
+                false);
+
+            value = englishResources?.GetString(key);
+        }
+
+        return value ?? (IsEnglish ? english : estonian);
+    }
+
+    private void InitializeLanguage()
+    {
+        languageSelector = filtrid.Controls
+            .OfType<ComboBox>()
+            .FirstOrDefault(c => c.Name == "comboLanguage")
+            ?? new ComboBox
+            {
+                Name = "comboLanguage",
+                Width = 110,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                BackColor = Color.FromArgb(29, 35, 47),
+                ForeColor = Color.FromArgb(235, 239, 247),
+                FlatStyle = FlatStyle.Flat
+            };
+
+        if (languageSelector.Parent == null)
+            filtrid.Controls.Add(languageSelector);
+
+        languageSelector.Items.Clear();
+        languageSelector.Items.AddRange(new object[]
+        {
+            "Eesti",
+            "English"
+        });
+
+        string language = "et-EE";
+
+        try
+        {
+            if (File.Exists(LanguageFile))
+                language = File.ReadAllText(LanguageFile).Trim();
+        }
+        catch (IOException)
+        {
+            language = "et-EE";
+        }
+        catch (UnauthorizedAccessException)
+        {
+            language = "et-EE";
+        }
+
+        ChangeLanguage(language, false);
+
+        languageSelector.SelectedIndexChanged +=
+            LanguageSelector_SelectedIndexChanged;
+    }
+
+    private void LanguageSelector_SelectedIndexChanged(
+        object? sender, EventArgs e)
+    {
+        if (languageChanging)
+            return;
+
+        ChangeLanguage(
+            languageSelector.SelectedIndex == 1
+                ? "en-US"
+                : "et-EE",
+            true);
+    }
+
+    private void ChangeLanguage(string language, bool save)
+    {
+        language = language == "en-US" ? "en-US" : "et-EE";
+
+        bool wasLoaded = andmedLaetud;
+        int sortIndex = comboJarjestus.SelectedIndex;
+
+        languageChanging = true;
+        andmedLaetud = false;
+
+        try
+        {
+            var culture = CultureInfo.GetCultureInfo(language);
+
+            CultureInfo.CurrentUICulture = culture;
+            CultureInfo.CurrentCulture = culture;
+
+            // Меняем только тексты, не трогая оформление.
+            Text = T("$this.Text", "Pood", "Store");
+
+            lblPealkiri.Text =
+                T("lblPealkiri.Text", "Pood", "Store");
+
+            lblOtsing.Text =
+                T("lblOtsing.Text", "Otsi:", "Search:");
+
+            lblAlates.Text =
+                T("lblAlates.Text", "Hind alates:", "Price from:");
+
+            lblKuni.Text =
+                T("lblKuni.Text", "kuni:", "to:");
+
+            lblJarjestus.Text =
+                T("lblJarjestus.Text", "Sorteeri:", "Sort by:");
+
+            chkLaos.Text =
+                T("chkLaos.Text", "Ainult laos", "In stock only");
+
+            btnPuhasta.Text = T(
+                "btnPuhasta.Text",
+                "Puhasta filtrid",
+                "Clear filters");
+
+            btnKorv.Text = T(
+                "btnKorv.Text",
+                "Ostukorv ja arve",
+                "Cart and invoice");
+
+            txtOtsing.PlaceholderText = T(
+                "txtOtsing.PlaceholderText",
+                "Sisesta toote nimi",
+                "Enter product name");
+
+            txtHindAlates.PlaceholderText = T(
+                "txtHindAlates.PlaceholderText",
+                "Alates (€)",
+                "From (€)");
+
+            txtHindKuni.PlaceholderText = T(
+                "txtHindKuni.PlaceholderText",
+                "Kuni (€)",
+                "To (€)");
+
+            comboJarjestus.Items.Clear();
+            comboJarjestus.Items.AddRange(new object[]
+            {
+                T("SortNameAscending", "Nimetus A–Z", "Name A–Z"),
+                T("SortNameDescending", "Nimetus Z–A", "Name Z–A"),
+                T("SortPriceAscending",
+                    "Hind kasvavalt", "Price: low to high"),
+                T("SortPriceDescending",
+                    "Hind kahanevalt", "Price: high to low")
+            });
+
+            comboJarjestus.SelectedIndex =
+                sortIndex >= 0 && sortIndex < 4 ? sortIndex : 0;
+
+            languageSelector.SelectedIndex = IsEnglish ? 1 : 0;
+        }
+        finally
+        {
+            andmedLaetud = wasLoaded;
+            languageChanging = false;
+        }
+
+        if (andmedLaetud)
+        {
+            RakendaFiltrid();
+        }
+        else
+        {
+            lblTulemus.Text = string.Format(
+                T("ProductsFound",
+                    "Leitud tooteid: {0}",
+                    "Products found: {0}"),
+                0);
+        }
+
+        if (save)
+        {
+            try
+            {
+                Directory.CreateDirectory(
+                    Path.GetDirectoryName(LanguageFile)!);
+
+                File.WriteAllText(LanguageFile, language);
+            }
+            catch (IOException)
+            {
+                ShowLanguageSaveError();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                ShowLanguageSaveError();
+            }
+        }
+    }
+
+    private void ShowLanguageSaveError()
+    {
+        MessageBox.Show(
+            T("LanguageSaveError",
+                "Keelevaliku salvestamine ebaõnnestus.",
+                "Could not save the language preference."),
+            T("ErrorTitle", "Viga", "Error"));
     }
 
     private void Form3_Load(object? sender, EventArgs e)
     {
-        if (System.ComponentModel.LicenseManager.UsageMode ==
-            System.ComponentModel.LicenseUsageMode.Designtime)
+        if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             return;
 
         try
@@ -36,10 +261,21 @@ public partial class Form3 : Form
         }
         catch (Exception viga)
         {
-            MessageBox.Show(
-                "Poe laadimine ebaõnnestus:\n" + viga.Message,
-                "Viga");
+            ShowError(
+                T("LoadError",
+                    "Poe laadimine ebaõnnestus:",
+                    "Failed to load the store:"),
+                viga);
         }
+    }
+
+    private void ShowError(string message, Exception error)
+    {
+        MessageBox.Show(
+            message + "\n" + error.Message,
+            T("ErrorTitle", "Viga", "Error"),
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error);
     }
 
     private void Filtrid_Changed(object? sender, EventArgs e)
@@ -49,15 +285,22 @@ public partial class Form3 : Form
 
     private void btnPuhasta_Click(object? sender, EventArgs e)
     {
+        bool wasLoaded = andmedLaetud;
         andmedLaetud = false;
 
-        txtOtsing.Clear();
-        txtHindAlates.Clear();
-        txtHindKuni.Clear();
-        comboJarjestus.SelectedIndex = 0;
-        chkLaos.Checked = false;
+        try
+        {
+            txtOtsing.Clear();
+            txtHindAlates.Clear();
+            txtHindKuni.Clear();
+            comboJarjestus.SelectedIndex = 0;
+            chkLaos.Checked = false;
+        }
+        finally
+        {
+            andmedLaetud = wasLoaded;
+        }
 
-        andmedLaetud = true;
         RakendaFiltrid();
     }
 
@@ -70,9 +313,11 @@ public partial class Form3 : Form
         }
         catch (Exception viga)
         {
-            MessageBox.Show(
-                "Arve avamine ebaõnnestus:\n" + viga.Message,
-                "Viga");
+            ShowError(
+                T("InvoiceError",
+                    "Arve avamine ebaõnnestus:",
+                    "Failed to open the invoice:"),
+                viga);
         }
     }
 
@@ -100,25 +345,26 @@ public partial class Form3 : Form
             TextFormatFlags.EndEllipsis);
     }
 
-    private static bool LoeHind(
-        string tekst, out decimal? hind)
+    private static bool LoeHind(string tekst, out decimal? hind)
     {
         hind = null;
 
         if (string.IsNullOrWhiteSpace(tekst))
             return true;
 
-        string vaartus = tekst.Trim().Replace(',', '.');
+        string value = tekst.Trim().Replace(',', '.');
 
         if (!decimal.TryParse(
-                vaartus,
+                value,
                 NumberStyles.AllowDecimalPoint,
                 CultureInfo.InvariantCulture,
-                out decimal tulemus)
-            || tulemus < 0)
+                out decimal result)
+            || result < 0)
+        {
             return false;
+        }
 
-        hind = tulemus;
+        hind = result;
         return true;
     }
 
@@ -131,16 +377,20 @@ public partial class Form3 : Form
             || !LoeHind(txtHindKuni.Text, out decimal? kuni))
         {
             lblTulemus.ForeColor = Color.Salmon;
-            lblTulemus.Text =
-                "Sisesta korrektne mittenegatiivne hind.";
+            lblTulemus.Text = T(
+                "InvalidPrice",
+                "Sisesta korrektne mittenegatiivne hind.",
+                "Enter a valid non-negative price.");
             return;
         }
 
         if (alates.HasValue && kuni.HasValue && alates > kuni)
         {
             lblTulemus.ForeColor = Color.Salmon;
-            lblTulemus.Text =
-                "Alghind ei tohi olla lõpphinnast suurem.";
+            lblTulemus.Text = T(
+                "InvalidRange",
+                "Alghind ei tohi olla lõpphinnast suurem.",
+                "The minimum price cannot exceed the maximum price.");
             return;
         }
 
@@ -154,99 +404,117 @@ public partial class Form3 : Form
 
         string? aktiivne = tabPood.SelectedTab?.Name;
 
-        while (tabPood.TabPages.Count > 0)
+        tabPood.SuspendLayout();
+
+        try
         {
-            var leht = tabPood.TabPages[0];
-            tabPood.TabPages.Remove(leht);
-            leht.Dispose();
-        }
-
-        foreach (var pilt in pildid)
-            pilt.Dispose();
-
-        pildid.Clear();
-
-        int arv = 0;
-
-        foreach (var kat in kategooriad)
-        {
-            var tooted = kat.Tooded
-                .Where(t =>
-                    (t.Toodenimetus ?? "").Contains(
-                        otsing,
-                        StringComparison.CurrentCultureIgnoreCase)
-                    && (!alates.HasValue ||
-                        t.Hind >= (float)alates.Value)
-                    && (!kuni.HasValue ||
-                        t.Hind <= (float)kuni.Value)
-                    && (!chkLaos.Checked || t.Kogus > 0))
-                .ToList();
-
-            tooted = comboJarjestus.SelectedIndex switch
+            while (tabPood.TabPages.Count > 0)
             {
-                1 => tooted
-                    .OrderByDescending(t => t.Toodenimetus)
-                    .ToList(),
+                var page = tabPood.TabPages[0];
+                tabPood.TabPages.Remove(page);
+                page.Dispose();
+            }
 
-                2 => tooted
-                    .OrderBy(t => t.Hind)
-                    .ThenBy(t => t.Toodenimetus)
-                    .ToList(),
+            foreach (var image in pildid)
+                image.Dispose();
 
-                3 => tooted
-                    .OrderByDescending(t => t.Hind)
-                    .ThenBy(t => t.Toodenimetus)
-                    .ToList(),
+            pildid.Clear();
 
-                _ => tooted
-                    .OrderBy(t => t.Toodenimetus)
-                    .ToList()
-            };
+            int arv = 0;
 
-            if (filtreeritud && tooted.Count == 0)
-                continue;
-
-            var leht = new TabPage(kat.Kategooria_nimetus)
+            foreach (var kat in kategooriad)
             {
-                Name = kat.Id.ToString()
-            };
+                var tooted = kat.Tooded
+                    .Where(t =>
+                        (t.Toodenimetus ?? "").Contains(
+                            otsing,
+                            StringComparison.CurrentCultureIgnoreCase)
+                        && (!alates.HasValue ||
+                            t.Hind >= (float)alates.Value)
+                        && (!kuni.HasValue ||
+                            t.Hind <= (float)kuni.Value)
+                        && (!chkLaos.Checked || t.Kogus > 0))
+                    .ToList();
 
-            var paigutus = new FlowLayoutPanel
+                tooted = comboJarjestus.SelectedIndex switch
+                {
+                    1 => tooted
+                        .OrderByDescending(t => t.Toodenimetus)
+                        .ToList(),
+
+                    2 => tooted
+                        .OrderBy(t => t.Hind)
+                        .ThenBy(t => t.Toodenimetus)
+                        .ToList(),
+
+                    3 => tooted
+                        .OrderByDescending(t => t.Hind)
+                        .ThenBy(t => t.Toodenimetus)
+                        .ToList(),
+
+                    _ => tooted
+                        .OrderBy(t => t.Toodenimetus)
+                        .ToList()
+                };
+
+                if (filtreeritud && tooted.Count == 0)
+                    continue;
+
+                var page = new TabPage(kat.Kategooria_nimetus)
+                {
+                    Name = kat.Id.ToString()
+                };
+
+                var layout = new FlowLayoutPanel
+                {
+                    Dock = DockStyle.Fill,
+                    AutoScroll = true
+                };
+
+                page.Controls.Add(layout);
+                tabPood.TabPages.Add(page);
+
+                Kujundus.Rakenda(page);
+
+                foreach (var toode in tooted)
+                {
+                    layout.Controls.Add(LooTooteKaart(toode));
+                    arv++;
+                }
+            }
+
+            if (aktiivne != null &&
+                tabPood.TabPages.ContainsKey(aktiivne))
             {
-                Dock = DockStyle.Fill,
-                AutoScroll = true
-            };
+                tabPood.SelectedTab =
+                    tabPood.TabPages[aktiivne];
+            }
 
-            leht.Controls.Add(paigutus);
-            tabPood.TabPages.Add(leht);
+            lblTulemus.ForeColor = Kujundus.Vaikne;
+            lblTulemus.Text = string.Format(
+                T("ProductsFound",
+                    "Leitud tooteid: {0}",
+                    "Products found: {0}"),
+                arv);
 
-            Kujundus.Rakenda(leht);
-
-            foreach (var toode in tooted)
+            if (tabPood.TabPages.Count == 0)
             {
-                paigutus.Controls.Add(LooTooteKaart(toode));
-                arv++;
+                var emptyPage = new TabPage(
+                    filtreeritud
+                        ? T("NoProducts",
+                            "Sobivaid tooteid ei leitud",
+                            "No matching products found")
+                        : T("NoCategories",
+                            "Kategooriaid pole veel lisatud",
+                            "No categories added yet"));
+
+                Kujundus.Rakenda(emptyPage);
+                tabPood.TabPages.Add(emptyPage);
             }
         }
-
-        if (aktiivne != null &&
-            tabPood.TabPages.ContainsKey(aktiivne))
+        finally
         {
-            tabPood.SelectedTab = tabPood.TabPages[aktiivne];
-        }
-
-        lblTulemus.ForeColor = Kujundus.Vaikne;
-        lblTulemus.Text = $"Leitud tooteid: {arv}";
-
-        if (tabPood.TabPages.Count == 0)
-        {
-            var tyhiLeht = new TabPage(
-                filtreeritud
-                    ? "Sobivaid tooteid ei leitud"
-                    : "Kategooriaid pole veel lisatud");
-
-            Kujundus.Rakenda(tyhiLeht);
-            tabPood.TabPages.Add(tyhiLeht);
+            tabPood.ResumeLayout(true);
         }
     }
 
@@ -269,36 +537,31 @@ public partial class Form3 : Form
 
         string nimi = Path.GetFileName(toode.Pilt ?? "");
 
-        string tee = Path.Combine(
-            Environment.GetFolderPath(
-                Environment.SpecialFolder.LocalApplicationData),
-            "Tooded_EFCore",
-            "Images",
-            nimi);
-
-        if (!File.Exists(tee))
+        string[] paths =
         {
-            tee = Path.Combine(
-                AppContext.BaseDirectory,
+            Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                "Tooded_EFCore",
                 "Images",
-                nimi);
-        }
+                nimi),
 
-        if (!File.Exists(tee))
-        {
-            tee = Path.Combine("Images", nimi);
-        }
+            Path.Combine(AppContext.BaseDirectory, "Images", nimi),
+
+            Path.Combine("Images", nimi)
+        };
+
+        string? path = paths.FirstOrDefault(File.Exists);
 
         try
         {
-            if (File.Exists(tee))
+            if (path != null)
             {
-                using var algne = Image.FromFile(tee);
+                using var original = Image.FromFile(path);
+                var copy = new Bitmap(original);
 
-                var koopia = new Bitmap(algne);
-
-                pildid.Add(koopia);
-                pildikast.Image = koopia;
+                pildid.Add(copy);
+                pildikast.Image = copy;
             }
         }
         catch (ArgumentException)
@@ -314,16 +577,21 @@ public partial class Form3 : Form
         {
             MessageBox.Show(
                 $"{toode.Toodenimetus}\n" +
-                $"Hind: {toode.Hind:0.00} €\n" +
-                $"Laos: {toode.Kogus} tk",
-                "Toote andmed");
+                $"{T("Price", "Hind", "Price")}: " +
+                $"{toode.Hind:0.00} €\n" +
+                $"{T("Stock", "Laos", "In stock")}: " +
+                $"{toode.Kogus} {T("Pieces", "tk", "pcs")}",
+                T("ProductDetails", "Toote andmed", "Product details"));
         };
 
         var nupp = new Button
         {
             Text = "+",
-            AccessibleName =
-                $"Lisa {toode.Toodenimetus} ostukorvi",
+            AccessibleName = string.Format(
+                T("AddToCart",
+                    "Lisa {0} ostukorvi",
+                    "Add {0} to cart"),
+                toode.Toodenimetus),
             Size = new Size(185, 32),
             Enabled = toode.Kogus > 0
         };
@@ -335,14 +603,19 @@ public partial class Form3 : Form
                 ArveForm.LisaKorvi(toode.Id);
 
                 lblTulemus.ForeColor = Kujundus.Vaikne;
-                lblTulemus.Text =
-                    $"Lisatud ostukorvi: {toode.Toodenimetus} (+1)";
+                lblTulemus.Text = string.Format(
+                    T("AddedToCart",
+                        "Lisatud ostukorvi: {0} (+1)",
+                        "Added to cart: {0} (+1)"),
+                    toode.Toodenimetus);
             }
             catch (Exception viga)
             {
-                MessageBox.Show(
-                    "Toote lisamine ebaõnnestus:\n" + viga.Message,
-                    "Viga");
+                ShowError(
+                    T("AddError",
+                        "Toote lisamine ebaõnnestus:",
+                        "Failed to add the product:"),
+                    viga);
             }
         };
 
@@ -352,7 +625,9 @@ public partial class Form3 : Form
         {
             Text =
                 $"{toode.Toodenimetus}\n" +
-                $"{toode.Hind:0.00} € | Laos: {toode.Kogus} tk",
+                $"{toode.Hind:0.00} € | " +
+                $"{T("Stock", "Laos", "In stock")}: " +
+                $"{toode.Kogus} {T("Pieces", "tk", "pcs")}",
 
             Size = new Size(185, 55)
         });
@@ -368,8 +643,8 @@ public partial class Form3 : Form
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
-        foreach (var pilt in pildid)
-            pilt.Dispose();
+        foreach (var image in pildid)
+            image.Dispose();
 
         pildid.Clear();
 

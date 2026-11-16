@@ -7,6 +7,16 @@ namespace Tooded_EFCore
         [STAThread]
         static void Main()
         {
+            string language = Properties.Settings.Default.UserLanguage;
+
+            if (language != "en-US" && language != "et-EE")
+                language = "et-EE";
+
+            var culture =
+                System.Globalization.CultureInfo.GetCultureInfo(language);
+
+            System.Globalization.CultureInfo.CurrentUICulture = culture;
+            System.Globalization.CultureInfo.CurrentCulture = culture;
             ApplicationConfiguration.Initialize();
 
             try
