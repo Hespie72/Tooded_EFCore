@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace Tooded_EFCore
 {
@@ -9,8 +10,11 @@ namespace Tooded_EFCore
         {
             string language = Properties.Settings.Default.UserLanguage;
 
-            if (language != "en-US" && language != "et-EE")
-                language = "et-EE";
+            if (string.IsNullOrWhiteSpace(language))
+                language = "et-EE"; // vaikimisi
+
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(language);
 
             var culture =
                 System.Globalization.CultureInfo.GetCultureInfo(language);
@@ -39,6 +43,7 @@ namespace Tooded_EFCore
                 return;
             }
 
+            ApplicationConfiguration.Initialize();
             Application.Run(new LoginForm());
         }
     }
