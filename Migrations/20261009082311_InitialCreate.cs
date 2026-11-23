@@ -32,7 +32,7 @@ namespace Tooded_EFCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Toodenimetus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Kogus = table.Column<int>(type: "int", nullable: false),
-                    Hind = table.Column<float>(type: "real", nullable: false),
+                    Hind = table.Column<decimal>(type: "real", nullable: false),
                     Pilt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     KategooriaId = table.Column<int>(type: "int", nullable: false)
                 },

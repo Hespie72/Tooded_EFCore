@@ -43,11 +43,11 @@ public partial class LoginForm : Form
                 Close();
             }
         }
-        catch (Exception viga)
+        catch (Exception)
         {
             MessageBox.Show(
-                "Sisselogimine ebaõnnestus:\n" + viga.Message,
-                "Viga");
+                lblVeateade.Text = "Vale e-post või parool!");
+            return;
         }
     }
 }
