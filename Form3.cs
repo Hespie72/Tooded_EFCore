@@ -44,7 +44,7 @@ public partial class Form3 : Form
         if (IsEnglish)
         {
             var englishResources = resources.GetResourceSet(
-                CultureInfo.GetCultureInfo("en"),
+                CultureInfo.GetCultureInfo("et"),
                 true,
                 false);
 
@@ -131,7 +131,6 @@ public partial class Form3 : Form
             CultureInfo.CurrentUICulture = culture;
             CultureInfo.CurrentCulture = culture;
 
-            // Меняем только тексты, не трогая оформление.
             Text = T("$this.Text", "Pood", "Store");
 
             lblPealkiri.Text =
